@@ -4,6 +4,7 @@ const KEYS = {
   SESSION: 'lf_session',
   LAST_REPORT_DRAFT: 'lf_last_report_draft',
   CACHED_REPORTS: 'lf_cached_reports',
+  SAVED_ITEMS: 'lf_saved_items',
 };
 
 export const storageService = {

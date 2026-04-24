@@ -84,6 +84,10 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.actionTitle}>🔎 Search Reports</Text>
           <Text style={styles.actionMeta}>Filter by campus</Text>
         </Pressable>
+        <Pressable style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]} onPress={() => navigation.navigate('Saved')}>
+          <Text style={styles.actionTitle}>⭐ Saved Items</Text>
+          <Text style={styles.actionMeta}>Your bookmarks</Text>
+        </Pressable>
         <Pressable
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}
           onPress={() => (user ? navigation.navigate('Alerts') : requireLogin())}

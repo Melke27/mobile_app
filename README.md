@@ -66,6 +66,8 @@ This project solves that through:
 - Report Found Item
 - Search and filter by status/campus/category/keyword/date
 - View item details and potential matches
+- Save/bookmark reports for quick access on device
+- Share item details from the app
 - Chat per item with other user
 - In-app notification center (match/chat/moderation alerts)
 - Mark item as recovered
@@ -221,6 +223,7 @@ Admin note: the first registered account is automatically assigned `admin` role 
 - `HomeScreen`
 - `ReportItemScreen`
 - `SearchScreen`
+- `SavedItemsScreen`
 - `ItemDetailScreen`
 - `ChatScreen`
 - `NotificationsScreen`

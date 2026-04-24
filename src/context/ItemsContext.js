@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { itemService } from '../services/itemService';
 import { matchingService } from '../services/matchingService';
 import { storageService } from '../services/storageService';
@@ -7,7 +7,52 @@ const ItemsContext = createContext(null);
 
 export const ItemsProvider = ({ children }) => {
   const [items, setItems] = useState([]);
+  const [savedItems, setSavedItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const savedItemsRef = useRef([]);
+
+  useEffect(() => {
+    storageService
+      .getJSON(storageService.keys.SAVED_ITEMS, [])
+      .then((saved) => {
+        const safeSaved = Array.isArray(saved) ? saved : [];
+        savedItemsRef.current = safeSaved;
+        setSavedItems(safeSaved);
+      })
+      .catch(() => {
+        savedItemsRef.current = [];
+        setSavedItems([]);
+      });
+  }, []);
+
+  const persistSavedItems = useCallback(async (nextSavedItems) => {
+    savedItemsRef.current = nextSavedItems;
+    setSavedItems(nextSavedItems);
+    await storageService.setJSON(storageService.keys.SAVED_ITEMS, nextSavedItems);
+  }, []);
+
+  const toggleSavedItem = useCallback(async (item) => {
+    if (!item?._id) {
+      return false;
+    }
+
+    const exists = savedItems.some((saved) => saved._id === item._id);
+    const nextSaved = exists
+      ? savedItems.filter((saved) => saved._id !== item._id)
+      : [item, ...savedItems];
+
+    await persistSavedItems(nextSaved);
+    return !exists;
+  }, [persistSavedItems, savedItems]);
+
+  const isItemSaved = useCallback(
+    (itemId) => Boolean(itemId && savedItems.some((saved) => saved._id === itemId)),
+    [savedItems]
+  );
+
+  const clearSavedItems = useCallback(async () => {
+    await persistSavedItems([]);
+  }, [persistSavedItems]);
 
   const loadLatest = useCallback(async (params = {}) => {
     setLoading(true);
@@ -26,11 +71,18 @@ export const ItemsProvider = ({ children }) => {
         await storageService.setJSON(storageService.keys.CACHED_REPORTS, nextItems);
       }
 
+      const currentSaved = savedItemsRef.current;
+      if (currentSaved.length) {
+        const indexById = new Map(nextItems.map((entry) => [entry._id, entry]));
+        const refreshedSaved = currentSaved.map((saved) => indexById.get(saved._id) || saved);
+        await persistSavedItems(refreshedSaved);
+      }
+
       return nextItems;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [persistSavedItems]);
 
   const createReport = useCallback(async (report) => {
     const data = await itemService.createReport(report);
@@ -80,6 +132,7 @@ export const ItemsProvider = ({ children }) => {
   const value = useMemo(
     () => ({
       items,
+      savedItems,
       loading,
       loadLatest,
       createReport,
@@ -89,11 +142,15 @@ export const ItemsProvider = ({ children }) => {
       flagReport,
       deleteReport,
       reviewFlaggedReport,
+      toggleSavedItem,
+      isItemSaved,
+      clearSavedItems,
       getFlaggedReports: itemService.getFlaggedReports,
       getAdminStats: itemService.getAdminStats,
     }),
     [
       items,
+      savedItems,
       loading,
       loadLatest,
       createReport,
@@ -103,6 +160,9 @@ export const ItemsProvider = ({ children }) => {
       flagReport,
       deleteReport,
       reviewFlaggedReport,
+      toggleSavedItem,
+      isItemSaved,
+      clearSavedItems,
     ]
   );
 

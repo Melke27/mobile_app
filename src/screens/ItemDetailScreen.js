@@ -5,6 +5,7 @@ import {
   Image,
   Pressable,
   SafeAreaView,
+  Share,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,7 +20,7 @@ import { generateItemImageUrl, resolveItemImageUrl } from '../utils/imageFallbac
 const ItemDetailScreen = ({ route, navigation }) => {
   const initial = route.params?.item || {};
   const { user } = useAuth();
-  const { markRecovered, flagReport, getMatchesFor } = useItems();
+  const { markRecovered, flagReport, getMatchesFor, toggleSavedItem, isItemSaved } = useItems();
 
   const [item, setItem] = useState(initial);
   const [matches, setMatches] = useState([]);
@@ -125,6 +126,29 @@ const ItemDetailScreen = ({ route, navigation }) => {
     }
   };
 
+  const onToggleSaved = async () => {
+    if (!item?._id) {
+      return;
+    }
+    try {
+      const nowSaved = await toggleSavedItem(item);
+      Alert.alert(nowSaved ? 'Saved' : 'Removed', nowSaved ? 'Item saved to your device.' : 'Item removed from saved list.');
+    } catch (_error) {
+      Alert.alert('Save failed', 'Could not update saved items.');
+    }
+  };
+
+  const onShare = async () => {
+    try {
+      await Share.share({
+        message: `${item.title || 'Lost/Found Item'}\n${item.description || ''}\nCampus: ${item.campus || 'N/A'}\nLocation: ${item.locationText || 'N/A'}`,
+        title: item.title || 'Lost/Found Item',
+      });
+    } catch (_error) {
+      Alert.alert('Share failed', 'Could not share this item right now.');
+    }
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.loaderWrap}>
@@ -137,6 +161,7 @@ const ItemDetailScreen = ({ route, navigation }) => {
   const isRecovered = item?.status === 'recovered';
   const canChat = Boolean(user?._id) && receiverId && receiverId !== user?._id;
   const isGuest = !user?._id;
+  const saved = isItemSaved(item?._id);
 
   return (
     <SafeAreaView style={styles.root}>
@@ -202,6 +227,17 @@ const ItemDetailScreen = ({ route, navigation }) => {
           </Pressable>
         )}
 
+        <View style={styles.row}>
+          <Pressable style={[styles.button, styles.saveButton]} onPress={onToggleSaved}>
+            <Text style={styles.buttonText}>{saved ? '⭐ Remove from Saved' : '⭐ Save Item'}</Text>
+          </Pressable>
+        </View>
+        <View style={styles.row}>
+          <Pressable style={[styles.button, styles.shareButton]} onPress={onShare}>
+            <Text style={styles.buttonText}>📤 Share Item</Text>
+          </Pressable>
+        </View>
+
         <Text style={styles.sectionTitle}>Potential Matches</Text>
         {isGuest ? (
           <Text style={styles.matchMeta}>Login to see personalized match scoring.</Text>
@@ -262,6 +298,8 @@ const styles = StyleSheet.create({
   warn: { backgroundColor: '#b04b4b', marginTop: 8 },
   chatButton: { marginTop: 10, backgroundColor: '#1d7e3f' },
   authButton: { marginTop: 10, backgroundColor: '#0b7285' },
+  saveButton: { marginTop: 10, backgroundColor: '#b57e14' },
+  shareButton: { marginTop: 10, backgroundColor: '#3457a8' },
   buttonText: { color: '#fff', fontWeight: '700' },
   flagInput: {
     marginTop: 10,

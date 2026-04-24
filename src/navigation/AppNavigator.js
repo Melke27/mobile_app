@@ -8,6 +8,7 @@ import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ReportItemScreen from '../screens/ReportItemScreen';
 import SearchScreen from '../screens/SearchScreen';
+import SavedItemsScreen from '../screens/SavedItemsScreen';
 import ItemDetailScreen from '../screens/ItemDetailScreen';
 import ChatScreen from '../screens/ChatScreen';
 import VerificationScreen from '../screens/VerificationScreen';
@@ -21,6 +22,7 @@ const TAB_META = {
   Home: { icon: '🏠', label: 'Home Feed' },
   Report: { icon: '📝', label: 'Report Item' },
   Search: { icon: '🔎', label: 'Search' },
+  Saved: { icon: '⭐', label: 'Saved' },
   Alerts: { icon: '🔔', label: 'Alerts' },
   Verify: { icon: '✅', label: 'Verify' },
   Admin: { icon: '🛡️', label: 'Admin' },
@@ -54,6 +56,7 @@ const MainTabs = ({ isAdmin }) => {
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: TAB_META.Home.label }} />
       <Tab.Screen name="Report" component={ReportItemScreen} options={{ title: TAB_META.Report.label }} />
       <Tab.Screen name="Search" component={SearchScreen} options={{ title: TAB_META.Search.label }} />
+      <Tab.Screen name="Saved" component={SavedItemsScreen} options={{ title: TAB_META.Saved.label }} />
       <Tab.Screen name="Alerts" component={NotificationsScreen} options={{ title: TAB_META.Alerts.label }} />
       <Tab.Screen name="Verify" component={VerificationScreen} options={{ title: TAB_META.Verify.label }} />
       {isAdmin && <Tab.Screen name="Admin" component={AdminDashboardScreen} options={{ title: TAB_META.Admin.label }} />}

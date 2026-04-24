@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -14,7 +14,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useItems } from '../context/ItemsContext';
 import { itemService } from '../services/itemService';
-import { resolveItemImageUrl } from '../utils/imageFallback';
+import { generateItemImageUrl, resolveItemImageUrl } from '../utils/imageFallback';
 
 const ItemDetailScreen = ({ route, navigation }) => {
   const initial = route.params?.item || {};
@@ -25,6 +25,7 @@ const ItemDetailScreen = ({ route, navigation }) => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(!initial?.title);
   const [flagReason, setFlagReason] = useState('Suspicious or spam report');
+  const [failedPrimaryImage, setFailedPrimaryImage] = useState(false);
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -73,8 +74,17 @@ const ItemDetailScreen = ({ route, navigation }) => {
   }, [getMatchesFor, item, user?._id]);
 
   const openAccountTab = () => {
-    navigation.navigate('GuestMain', { screen: 'Account' });
+    if (navigation.getState()?.routeNames?.includes('Login')) {
+      navigation.navigate('Login');
+      return;
+    }
+    navigation.goBack();
   };
+
+  const imageSource = useMemo(() => {
+    const url = failedPrimaryImage ? generateItemImageUrl(item) : resolveItemImageUrl(item);
+    return { uri: url };
+  }, [failedPrimaryImage, item]);
 
   const onRecovered = async () => {
     if (!user?._id) {
@@ -131,16 +141,23 @@ const ItemDetailScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Image source={{ uri: resolveItemImageUrl(item) }} style={styles.itemImage} resizeMode="cover" />
+        <Image
+          source={imageSource}
+          style={styles.itemImage}
+          resizeMode="cover"
+          onError={() => setFailedPrimaryImage(true)}
+        />
         <Text style={styles.title}>{item.title || 'Item Details'}</Text>
-        <Text style={styles.badge}>{(item.status || 'unknown').toUpperCase()}</Text>
+        <Text style={styles.badge}>
+          {item.status === 'lost' ? '🧭' : item.status === 'recovered' ? '✅' : '📦'} {(item.status || 'unknown').toUpperCase()}
+        </Text>
         <Text style={styles.info}>{item.description || 'No description'}</Text>
-        <Text style={styles.info}>Category: {item.category || 'N/A'}</Text>
-        <Text style={styles.info}>Campus: {item.campus || 'N/A'}</Text>
-        <Text style={styles.info}>Location: {item.locationText || 'Not provided'}</Text>
-        <Text style={styles.info}>Reported by: {item?.reportedBy?.name || 'Unknown'}</Text>
+        <Text style={styles.info}>🏷️ Category: {item.category || 'N/A'}</Text>
+        <Text style={styles.info}>🏫 Campus: {item.campus || 'N/A'}</Text>
+        <Text style={styles.info}>📍 Location: {item.locationText || 'Not provided'}</Text>
+        <Text style={styles.info}>👤 Reported by: {item?.reportedBy?.name || 'Unknown'}</Text>
         {item?.createdAt && (
-          <Text style={styles.info}>Reported at: {new Date(item.createdAt).toLocaleString()}</Text>
+          <Text style={styles.info}>🕒 Reported at: {new Date(item.createdAt).toLocaleString()}</Text>
         )}
 
         {isGuest ? (
@@ -148,7 +165,7 @@ const ItemDetailScreen = ({ route, navigation }) => {
             <Text style={styles.guestTitle}>Sign in for full actions</Text>
             <Text style={styles.guestMeta}>Login to report, flag, recover items, and chat with reporters.</Text>
             <Pressable style={[styles.button, styles.authButton]} onPress={openAccountTab}>
-              <Text style={styles.buttonText}>Go to Login</Text>
+              <Text style={styles.buttonText}>🔐 Go to Login</Text>
             </Pressable>
           </View>
         ) : (
@@ -159,7 +176,7 @@ const ItemDetailScreen = ({ route, navigation }) => {
                 onPress={onRecovered}
                 disabled={isRecovered}
               >
-                <Text style={styles.buttonText}>{isRecovered ? 'Already Recovered' : 'Mark Recovered'}</Text>
+                <Text style={styles.buttonText}>{isRecovered ? '✅ Already Recovered' : '✅ Mark Recovered'}</Text>
               </Pressable>
             </View>
 
@@ -171,7 +188,7 @@ const ItemDetailScreen = ({ route, navigation }) => {
               placeholderTextColor="#6a7f86"
             />
             <Pressable style={[styles.button, styles.warn]} onPress={onFlag}>
-              <Text style={styles.buttonText}>Flag Post</Text>
+              <Text style={styles.buttonText}>🚩 Flag Post</Text>
             </Pressable>
           </>
         )}
@@ -181,7 +198,7 @@ const ItemDetailScreen = ({ route, navigation }) => {
             style={[styles.button, styles.chatButton]}
             onPress={() => navigation.navigate('Chat', { item, otherUserId: receiverId })}
           >
-            <Text style={styles.buttonText}>Chat with Reporter</Text>
+            <Text style={styles.buttonText}>💬 Chat with Reporter</Text>
           </Pressable>
         )}
 

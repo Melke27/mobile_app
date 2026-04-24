@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -171,6 +172,13 @@ const ReportItemScreen = () => {
       >
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <Text style={styles.title}>Report Lost or Found Item</Text>
+          <Text style={styles.subtitle}>Add photo, location, and details for faster matching.</Text>
+
+          <View style={styles.pointsRow}>
+            <Text style={styles.point}>✅ Title</Text>
+            <Text style={styles.point}>🖼️ Photo</Text>
+            <Text style={styles.point}>📍 Location</Text>
+          </View>
 
           <View style={styles.segmentRow}>
             {['lost', 'found'].map((state) => {
@@ -237,19 +245,19 @@ const ReportItemScreen = () => {
 
           <View style={styles.actionRow}>
             <Pressable style={styles.secondaryButton} onPress={() => attachPhoto('camera')}>
-              <Text style={styles.secondaryText}>Use Camera</Text>
+              <Text style={styles.secondaryText}>📸 Use Camera</Text>
             </Pressable>
             <Pressable style={styles.secondaryButton} onPress={() => attachPhoto('gallery')}>
-              <Text style={styles.secondaryText}>From Gallery</Text>
+              <Text style={styles.secondaryText}>🖼️ From Gallery</Text>
             </Pressable>
           </View>
 
           <View style={styles.actionRow}>
             <Pressable style={styles.secondaryButton} onPress={attachLocation}>
-              <Text style={styles.secondaryText}>{form.location ? 'GPS Added' : 'Add GPS'}</Text>
+              <Text style={styles.secondaryText}>{form.location ? '📍 GPS Added' : '📍 Add GPS'}</Text>
             </Pressable>
             <Pressable style={styles.secondaryButton} onPress={applyGeneratedImage}>
-              <Text style={styles.secondaryText}>Generate Image</Text>
+              <Text style={styles.secondaryText}>🎨 Generate Image</Text>
             </Pressable>
           </View>
 
@@ -259,8 +267,17 @@ const ReportItemScreen = () => {
             </Pressable>
           </View>
 
-          {Boolean(form.imageUrl) && <Text style={styles.meta}>Photo attached: Yes</Text>}
-          {Boolean(form.location) && <Text style={styles.meta}>Coordinates attached: Yes</Text>}
+          {Boolean(form.imageUrl) && (
+            <View style={styles.previewWrap}>
+              <Text style={styles.previewTitle}>Attached Photo Preview</Text>
+              <Image source={{ uri: form.imageUrl }} style={styles.previewImage} resizeMode="cover" />
+            </View>
+          )}
+          {Boolean(form.location) && (
+            <Text style={styles.meta}>
+              Coordinates: {form.location.latitude?.toFixed(5)}, {form.location.longitude?.toFixed(5)}
+            </Text>
+          )}
 
           <Pressable style={styles.submitButton} onPress={onSubmit} disabled={submitting}>
             <Text style={styles.submitText}>{submitting ? 'Posting...' : 'Submit Report'}</Text>
@@ -275,6 +292,19 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#f6fafb' },
   content: { padding: 14, paddingBottom: 24 },
   title: { fontSize: 20, fontWeight: '800', color: '#12343b', marginBottom: 12 },
+  subtitle: { color: '#55727a', marginTop: -6, marginBottom: 8 },
+  pointsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
+  point: {
+    borderWidth: 1,
+    borderColor: '#d3e3e7',
+    borderRadius: 999,
+    backgroundColor: '#fbfeff',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    color: '#1f5360',
+    fontWeight: '700',
+    fontSize: 12,
+  },
   segmentRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
   segment: {
     flex: 1,
@@ -328,7 +358,22 @@ const styles = StyleSheet.create({
   secondaryDanger: { borderColor: '#d79d9d', backgroundColor: '#fff8f8' },
   secondaryText: { color: '#15545f', fontWeight: '700' },
   secondaryDangerText: { color: '#9e2f2f' },
-  meta: { color: '#587479', marginBottom: 6 },
+  previewWrap: {
+    borderWidth: 1,
+    borderColor: '#d3e2e6',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    padding: 10,
+    marginBottom: 8,
+  },
+  previewTitle: { color: '#204a54', fontWeight: '800', marginBottom: 8 },
+  previewImage: {
+    width: '100%',
+    height: 160,
+    borderRadius: 8,
+    backgroundColor: '#dfecef',
+  },
+  meta: { color: '#587479', marginBottom: 8, fontWeight: '600' },
   submitButton: {
     backgroundColor: '#1d7e3f',
     borderRadius: 8,

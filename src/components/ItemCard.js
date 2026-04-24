@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { resolveItemImageUrl } from '../utils/imageFallback';
+import { generateItemImageUrl, resolveItemImageUrl } from '../utils/imageFallback';
 
 const ItemCard = ({ item, onPress }) => {
   const statusStyle =
     item.status === 'lost' ? styles.lost : item.status === 'recovered' ? styles.recovered : styles.found;
-  const imageSource = { uri: resolveItemImageUrl(item) };
+  const statusIcon = item.status === 'lost' ? '🧭' : item.status === 'recovered' ? '✅' : '📦';
+  const [failedPrimaryImage, setFailedPrimaryImage] = useState(false);
+  const imageSource = useMemo(() => {
+    const sourceUrl = failedPrimaryImage ? generateItemImageUrl(item) : resolveItemImageUrl(item);
+    return { uri: sourceUrl };
+  }, [failedPrimaryImage, item]);
 
   return (
     <Pressable
@@ -15,18 +20,31 @@ const ItemCard = ({ item, onPress }) => {
       hitSlop={4}
       android_ripple={{ color: '#d8e8ed' }}
     >
-      <Image source={imageSource} style={styles.image} resizeMode="cover" />
+      <Image
+        source={imageSource}
+        style={styles.image}
+        resizeMode="cover"
+        onError={() => setFailedPrimaryImage(true)}
+      />
       <View style={styles.headerRow}>
         <Text style={styles.title} numberOfLines={1}>
           {item.title}
         </Text>
-        <Text style={[styles.badge, statusStyle]}>{item.status}</Text>
+        <Text style={[styles.badge, statusStyle]}>{statusIcon} {item.status}</Text>
       </View>
       <Text style={styles.description} numberOfLines={2}>
         {item.description}
       </Text>
-      <Text style={styles.meta}>{item.category} | {item.campus}</Text>
-      <Text style={styles.meta}>{item.locationText || 'No location text'}</Text>
+      <Text style={styles.meta}>🏷️ {item.category} | 🏫 {item.campus}</Text>
+      <Text style={styles.meta}>📍 {item.locationText || 'No location text'}</Text>
+      <View style={styles.footerRow}>
+        <Text style={styles.dateMeta}>
+          {item.createdAt ? `🕒 ${new Date(item.createdAt).toLocaleDateString()}` : '🕒 Recently posted'}
+        </Text>
+        <View style={styles.ctaPill}>
+          <Text style={styles.ctaText}>View Details</Text>
+        </View>
+      </View>
     </Pressable>
   );
 };
@@ -67,6 +85,22 @@ const styles = StyleSheet.create({
   recovered: { backgroundColor: '#e8ebf8', color: '#2b3c78' },
   description: { color: '#444', marginBottom: 8 },
   meta: { color: '#777', fontSize: 12 },
+  footerRow: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  dateMeta: { color: '#5f7a82', fontSize: 12, fontWeight: '600' },
+  ctaPill: {
+    borderWidth: 1,
+    borderColor: '#bfd8de',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: '#f2fafc',
+  },
+  ctaText: { color: '#1b5e6b', fontSize: 11, fontWeight: '700' },
 });
 
 export default ItemCard;

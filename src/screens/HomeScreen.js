@@ -77,18 +77,18 @@ const HomeScreen = ({ navigation }) => {
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}
           onPress={() => (user ? navigation.navigate('Report') : requireLogin())}
         >
-          <Text style={styles.actionTitle}>Report Item</Text>
+          <Text style={styles.actionTitle}>📝 Report Item</Text>
           <Text style={styles.actionMeta}>Lost or found</Text>
         </Pressable>
         <Pressable style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]} onPress={() => navigation.navigate('Search')}>
-          <Text style={styles.actionTitle}>Search Reports</Text>
+          <Text style={styles.actionTitle}>🔎 Search Reports</Text>
           <Text style={styles.actionMeta}>Filter by campus</Text>
         </Pressable>
         <Pressable
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}
           onPress={() => (user ? navigation.navigate('Alerts') : requireLogin())}
         >
-          <Text style={styles.actionTitle}>Check Alerts</Text>
+          <Text style={styles.actionTitle}>🔔 Check Alerts</Text>
           <Text style={styles.actionMeta}>Stay updated</Text>
         </Pressable>
       </View>
@@ -157,7 +157,15 @@ const HomeScreen = ({ navigation }) => {
         ListHeaderComponent={listHeader}
         contentContainerStyle={styles.listContent}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={init} />}
-        ListEmptyComponent={<EmptyState message="No reports yet. Start by posting a lost or found item." />}
+        ListEmptyComponent={(
+          <EmptyState
+            icon="🧺"
+            title="No Reports Yet"
+            message="Start by posting a lost or found item."
+            actionLabel="Create First Report"
+            onAction={() => (user ? navigation.navigate('Report') : requireLogin())}
+          />
+        )}
       />
     </SafeAreaView>
   );

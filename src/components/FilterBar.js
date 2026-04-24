@@ -18,7 +18,7 @@ const FilterBar = ({ filters, onChange, onSearch, onReset }) => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Search title, description, or location"
+        placeholder="🔎 Search title, description, or location"
         placeholderTextColor="#6a7f86"
         value={filters.keyword}
         onChangeText={(text) => onChange({ ...filters, keyword: text })}
@@ -27,14 +27,14 @@ const FilterBar = ({ filters, onChange, onSearch, onReset }) => {
       <View style={styles.twoColRow}>
         <TextInput
           style={[styles.input, styles.twoColInput]}
-          placeholder="Category"
+          placeholder="🏷️ Category"
           placeholderTextColor="#6a7f86"
           value={filters.category}
           onChangeText={(text) => onChange({ ...filters, category: text })}
         />
         <TextInput
           style={[styles.input, styles.twoColInput]}
-          placeholder="Campus"
+          placeholder="🏫 Campus"
           placeholderTextColor="#6a7f86"
           value={filters.campus}
           onChangeText={(text) => onChange({ ...filters, campus: text })}
@@ -49,10 +49,10 @@ const FilterBar = ({ filters, onChange, onSearch, onReset }) => {
           onSelect={(status) => onChange({ ...filters, status })}
         />
         <Pressable style={styles.resetButton} onPress={onReset}>
-          <Text style={styles.resetButtonText}>Reset</Text>
+          <Text style={styles.resetButtonText}>↺ Reset</Text>
         </Pressable>
         <Pressable style={styles.searchButton} onPress={onSearch}>
-          <Text style={styles.searchButtonText}>Search</Text>
+          <Text style={styles.searchButtonText}>Search ▶</Text>
         </Pressable>
       </View>
     </View>

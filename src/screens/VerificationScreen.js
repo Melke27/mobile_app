@@ -59,7 +59,7 @@ const VerificationScreen = () => {
             />
 
             <Pressable style={styles.button} onPress={generate}>
-              <Text style={styles.buttonText}>Generate Token</Text>
+              <Text style={styles.buttonText}>🧾 Generate Token</Text>
             </Pressable>
 
             <TextInput
@@ -72,16 +72,16 @@ const VerificationScreen = () => {
             />
 
             <Pressable style={[styles.button, styles.alt]} onPress={verify}>
-              <Text style={styles.buttonText}>Verify Token</Text>
+              <Text style={styles.buttonText}>✅ Verify Token</Text>
             </Pressable>
 
             {verificationError ? <Text style={styles.errorText}>{verificationError}</Text> : null}
 
             {verification && (
               <View style={styles.result}>
-                <Text style={styles.resultText}>Valid Token</Text>
-                <Text style={styles.resultText}>Item: {verification.itemId}</Text>
-                <Text style={styles.resultText}>Owner: {verification.ownerId}</Text>
+                <Text style={styles.resultText}>✅ Valid Token</Text>
+                <Text style={styles.resultText}>📦 Item: {verification.itemId}</Text>
+                <Text style={styles.resultText}>👤 Owner: {verification.ownerId}</Text>
               </View>
             )}
           </View>

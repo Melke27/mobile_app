@@ -79,7 +79,7 @@ const NotificationsScreen = ({ navigation }) => {
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>Alerts</Text>
-          <Text style={styles.subtitle}>{unreadCount} unread notifications</Text>
+          <Text style={styles.subtitle}>🔔 {unreadCount} unread notifications</Text>
         </View>
         <Pressable style={styles.markButton} onPress={markAllRead}>
           <Text style={styles.markButtonText}>Mark all read</Text>
@@ -96,7 +96,13 @@ const NotificationsScreen = ({ navigation }) => {
         renderItem={({ item }) => <NotificationCard item={item} onPress={() => openNotification(item)} />}
         contentContainerStyle={{ padding: 12, paddingBottom: 24 }}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
-        ListEmptyComponent={<EmptyState message="No notifications yet." />}
+        ListEmptyComponent={
+          <EmptyState
+            icon="📭"
+            title="No Alerts Yet"
+            message="Match and chat notifications will appear here."
+          />
+        }
       />
     </SafeAreaView>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuth } from '../context/AuthContext';
@@ -17,15 +17,46 @@ import NotificationsScreen from '../screens/NotificationsScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const TAB_META = {
+  Home: { icon: '🏠', label: 'Home Feed' },
+  Report: { icon: '📝', label: 'Report Item' },
+  Search: { icon: '🔎', label: 'Search' },
+  Alerts: { icon: '🔔', label: 'Alerts' },
+  Verify: { icon: '✅', label: 'Verify' },
+  Admin: { icon: '🛡️', label: 'Admin' },
+};
+
 const MainTabs = ({ isAdmin }) => {
   return (
-    <Tab.Navigator initialRouteName="Home">
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Report" component={ReportItemScreen} />
-      <Tab.Screen name="Search" component={SearchScreen} />
-      <Tab.Screen name="Alerts" component={NotificationsScreen} />
-      <Tab.Screen name="Verify" component={VerificationScreen} />
-      {isAdmin && <Tab.Screen name="Admin" component={AdminDashboardScreen} />}
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={({ route }) => ({
+        headerStyle: { backgroundColor: '#ffffff' },
+        headerShadowVisible: false,
+        headerTintColor: '#103943',
+        headerTitleStyle: { fontWeight: '800' },
+        tabBarActiveTintColor: '#0b7285',
+        tabBarInactiveTintColor: '#688189',
+        tabBarLabelStyle: { fontWeight: '700', fontSize: 12 },
+        tabBarStyle: {
+          borderTopWidth: 1,
+          borderTopColor: '#d7e6ea',
+          height: 62,
+          paddingBottom: 8,
+          paddingTop: 6,
+          backgroundColor: '#f9feff',
+        },
+        tabBarIcon: ({ color, focused }) => (
+          <Text style={{ fontSize: focused ? 18 : 16, color }}>{TAB_META[route.name]?.icon || '⬤'}</Text>
+        ),
+      })}
+    >
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: TAB_META.Home.label }} />
+      <Tab.Screen name="Report" component={ReportItemScreen} options={{ title: TAB_META.Report.label }} />
+      <Tab.Screen name="Search" component={SearchScreen} options={{ title: TAB_META.Search.label }} />
+      <Tab.Screen name="Alerts" component={NotificationsScreen} options={{ title: TAB_META.Alerts.label }} />
+      <Tab.Screen name="Verify" component={VerificationScreen} options={{ title: TAB_META.Verify.label }} />
+      {isAdmin && <Tab.Screen name="Admin" component={AdminDashboardScreen} options={{ title: TAB_META.Admin.label }} />}
     </Tab.Navigator>
   );
 };

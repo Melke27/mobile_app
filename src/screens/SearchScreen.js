@@ -53,7 +53,7 @@ const SearchScreen = ({ navigation }) => {
     <SafeAreaView style={styles.root}>
       <View style={styles.content}>
         <Text style={styles.title}>Search Items</Text>
-        <Text style={styles.subtitle}>{results.length} results</Text>
+        <Text style={styles.subtitle}>🔎 {results.length} results</Text>
         <FilterBar filters={filters} onChange={setFilters} onSearch={onSearch} onReset={onReset} />
 
         <FlatList
@@ -66,7 +66,15 @@ const SearchScreen = ({ navigation }) => {
           initialNumToRender={8}
           maxToRenderPerBatch={8}
           windowSize={5}
-          ListEmptyComponent={<EmptyState message="No results yet. Try changing filters." />}
+          ListEmptyComponent={
+            <EmptyState
+              icon="🧭"
+              title="No Results"
+              message="Try changing filters or keywords."
+              actionLabel="Reset Filters"
+              onAction={onReset}
+            />
+          }
           contentContainerStyle={{ paddingBottom: 24 }}
           refreshControl={<RefreshControl refreshing={loading} onRefresh={onSearch} />}
         />

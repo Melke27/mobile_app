@@ -1,13 +1,15 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const generateToken = (userId) => {
-  const secret = process.env.JWT_SECRET && process.env.JWT_SECRET.trim();
+  let secret = process.env.JWT_SECRET && process.env.JWT_SECRET.trim();
   if (!secret) {
-    const error = new Error(
-      'Server auth is not configured (JWT_SECRET missing). Contact admin to set JWT_SECRET.'
+    secret = crypto.randomBytes(48).toString('hex');
+    process.env.JWT_SECRET = secret;
+    process.env.JWT_SECRET_SOURCE = 'runtime-fallback';
+    console.warn(
+      'JWT_SECRET was missing during token generation. Runtime fallback secret was created.'
     );
-    error.status = 500;
-    throw error;
   }
 
   return jwt.sign({ sub: userId }, secret, {

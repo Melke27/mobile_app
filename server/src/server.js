@@ -1,4 +1,5 @@
 require('dotenv').config();
+const crypto = require('crypto');
 const app = require('./app');
 const connectDB = require('./config/db');
 
@@ -7,18 +8,17 @@ const PORT = process.env.PORT || 5000;
 const ensureRuntimeConfig = () => {
   const hasJwtSecret = Boolean(process.env.JWT_SECRET && process.env.JWT_SECRET.trim());
   if (hasJwtSecret) {
+    process.env.JWT_SECRET_SOURCE = 'configured';
     return;
   }
 
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error(
-      'Missing JWT_SECRET in environment. Add JWT_SECRET in Render dashboard and redeploy.'
-    );
-  }
+  const runtimeSecret = crypto.randomBytes(48).toString('hex');
+  process.env.JWT_SECRET = runtimeSecret;
+  process.env.JWT_SECRET_SOURCE = 'runtime-fallback';
 
-  process.env.JWT_SECRET = 'local-dev-insecure-jwt-secret';
   console.warn(
-    'JWT_SECRET is missing. Using local development fallback secret. Set JWT_SECRET in server/.env.'
+    'JWT_SECRET is missing. Generated runtime fallback secret so server can start. ' +
+      'Set JWT_SECRET in environment for persistent auth across restarts.'
   );
 };
 

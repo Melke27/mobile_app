@@ -43,6 +43,7 @@ app.get('/api/health', (_req, res) => {
     ok: true,
     service: 'campus-lost-found-api',
     authConfigured: Boolean(process.env.JWT_SECRET && process.env.JWT_SECRET.trim()),
+    authSecretSource: process.env.JWT_SECRET_SOURCE || 'unknown',
     dbConfigured: Boolean(process.env.MONGODB_URI && process.env.MONGODB_URI.trim()),
   });
 });

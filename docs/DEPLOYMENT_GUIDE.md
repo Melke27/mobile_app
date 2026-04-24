@@ -54,6 +54,7 @@ Because pricing can change, always verify current plan limits before deployment.
 6. Deploy and confirm health endpoint:
    - `https://<your-service>.onrender.com/api/health`
    - Confirm response includes `"authConfigured": true`
+   - `authSecretSource` should be `"configured"` (not `"runtime-fallback"`)
 
 ## 4. Connect Mobile App to Hosted Backend
 
@@ -164,4 +165,6 @@ This starts Metro and backend together.
 - Registration fails on hosted backend with `Server auth is not configured` or `secretOrPrivateKey must have a value`:
   - In Render Dashboard -> Service -> Environment, add `JWT_SECRET=<strong-random-value>`.
   - Click **Manual Deploy** -> **Deploy latest commit**.
-  - Recheck `https://<service>/api/health` and confirm `"authConfigured": true`.
+  - Recheck `https://<service>/api/health` and confirm:
+    - `"authConfigured": true`
+    - `"authSecretSource": "configured"`

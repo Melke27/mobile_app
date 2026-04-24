@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -33,25 +33,40 @@ const ChatScreen = ({ route }) => {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const pollingInFlightRef = useRef(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async ({ silent = false } = {}) => {
+    if (silent && pollingInFlightRef.current) {
+      return;
+    }
+
+    if (!silent) {
+      setLoading(true);
+    } else {
+      pollingInFlightRef.current = true;
+    }
+
     try {
       const data = await chatService.getConversation(item._id, otherUserId);
       setMessages(data.messages || []);
     } catch (error) {
-      Alert.alert('Chat error', error?.response?.data?.message || 'Could not load messages.');
+      if (!silent) {
+        Alert.alert('Chat error', error?.response?.data?.message || 'Could not load messages.');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
+      pollingInFlightRef.current = false;
     }
   }, [item._id, otherUserId]);
 
   useEffect(() => {
-    load();
+    load().catch(() => undefined);
 
     const timer = setInterval(() => {
-      load().catch(() => undefined);
-    }, 6000);
+      load({ silent: true }).catch(() => undefined);
+    }, 8000);
 
     return () => clearInterval(timer);
   }, [load]);

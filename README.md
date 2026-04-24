@@ -158,6 +158,21 @@ npm start
 npm run android
 ```
 
+Physical phone over USB (maps both Metro `8081` and local API `5000`):
+
+```bash
+# terminal 1
+npm start
+# terminal 2
+npm run android:usb
+```
+
+If you have multiple devices connected (phone + emulator), target one device:
+
+```bash
+ANDROID_SERIAL=<device-id> npm run android:usb:device
+```
+
 Alternative development command (runs backend + Metro together):
 
 ```bash
@@ -171,8 +186,17 @@ npm run apk:debug
 npm run apk:release
 ```
 
+If you install `app-debug.apk` manually, keep Metro running and run:
+
+```bash
+adb reverse tcp:8081 tcp:8081
+```
+
 Note for Android emulator: default API URL is `http://10.0.2.2:5000/api`.
-Note for physical phone: set `USE_LOCAL_PHONE_BACKEND = true` and update `LOCAL_PHONE_API_BASE_URL` in `src/config/env.js`.
+Dev backend mode is controlled in `src/config/env.js`:
+- set `DEV_BACKEND_MODE = 'auto'` for smart fallback (USB reverse -> emulator -> Wi-Fi phone -> hosted)
+- set `DEV_BACKEND_MODE = 'phone_wifi'` and update `LOCAL_PHONE_API_BASE_URL` for same-Wi-Fi phone testing
+- set `DEV_BACKEND_MODE = 'hosted'` to force hosted API in development
 
 Admin note: the first registered account is automatically assigned `admin` role for easier project setup/demo.
 

@@ -13,7 +13,9 @@ const { notFoundHandler, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 const parsedRateLimit = Number(process.env.RATE_LIMIT_MAX);
-const requestLimit = Number.isFinite(parsedRateLimit) && parsedRateLimit > 0 ? parsedRateLimit : 500;
+const defaultRateLimit = process.env.NODE_ENV === 'production' ? 500 : 5000;
+const requestLimit = Number.isFinite(parsedRateLimit) && parsedRateLimit > 0 ? parsedRateLimit : defaultRateLimit;
+const rateLimitEnabled = process.env.RATE_LIMIT_ENABLED !== 'false';
 
 app.set('trust proxy', 1);
 
@@ -23,15 +25,18 @@ app.use(compression());
 app.use(express.json({ limit: '2mb' }));
 app.use(morgan('dev'));
 
-app.use(
-  '/api',
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: requestLimit,
-    standardHeaders: true,
-    legacyHeaders: false,
-  })
-);
+if (rateLimitEnabled) {
+  app.use(
+    '/api',
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: requestLimit,
+      standardHeaders: true,
+      legacyHeaders: false,
+      skip: (req) => req.path === '/health',
+    })
+  );
+}
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'campus-lost-found-api' });

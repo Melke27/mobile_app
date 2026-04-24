@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { itemService } from '../services/itemService';
 import { matchingService } from '../services/matchingService';
 import { storageService } from '../services/storageService';
@@ -9,7 +9,7 @@ export const ItemsProvider = ({ children }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const loadLatest = async (params = {}) => {
+  const loadLatest = useCallback(async (params = {}) => {
     setLoading(true);
 
     try {
@@ -30,20 +30,20 @@ export const ItemsProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const createReport = async (report) => {
+  const createReport = useCallback(async (report) => {
     const data = await itemService.createReport(report);
     await loadLatest();
     return data;
-  };
+  }, [loadLatest]);
 
-  const searchReports = async (filters) => {
+  const searchReports = useCallback(async (filters) => {
     const data = await itemService.searchReports(filters);
     return data.items || [];
-  };
+  }, []);
 
-  const getMatchesFor = async (item) => {
+  const getMatchesFor = useCallback(async (item) => {
     const data = await itemService.getPotentialMatches(item._id);
     if (data?.matches?.length) {
       return data.matches;
@@ -51,31 +51,31 @@ export const ItemsProvider = ({ children }) => {
 
     // Fallback local matching if backend matching endpoint is unavailable.
     return matchingService.findPotentialMatches(item, items);
-  };
+  }, [items]);
 
-  const markRecovered = async (id) => {
+  const markRecovered = useCallback(async (id) => {
     const data = await itemService.markRecovered(id);
     await loadLatest();
     return data;
-  };
+  }, [loadLatest]);
 
-  const flagReport = async (id, reason) => {
+  const flagReport = useCallback(async (id, reason) => {
     const data = await itemService.flagReport(id, reason);
     await loadLatest();
     return data;
-  };
+  }, [loadLatest]);
 
-  const deleteReport = async (id) => {
+  const deleteReport = useCallback(async (id) => {
     const data = await itemService.deleteReport(id);
     await loadLatest();
     return data;
-  };
+  }, [loadLatest]);
 
-  const reviewFlaggedReport = async (id, action, note) => {
+  const reviewFlaggedReport = useCallback(async (id, action, note) => {
     const data = await itemService.reviewFlaggedReport(id, action, note);
     await loadLatest();
     return data;
-  };
+  }, [loadLatest]);
 
   const value = useMemo(
     () => ({
@@ -92,7 +92,18 @@ export const ItemsProvider = ({ children }) => {
       getFlaggedReports: itemService.getFlaggedReports,
       getAdminStats: itemService.getAdminStats,
     }),
-    [items, loading]
+    [
+      items,
+      loading,
+      loadLatest,
+      createReport,
+      searchReports,
+      getMatchesFor,
+      markRecovered,
+      flagReport,
+      deleteReport,
+      reviewFlaggedReport,
+    ]
   );
 
   return <ItemsContext.Provider value={value}>{children}</ItemsContext.Provider>;

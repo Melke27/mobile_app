@@ -59,6 +59,9 @@ Because pricing can change, always verify current plan limits before deployment.
 Open `src/config/env.js` and set:
 
 - `HOSTED_API_BASE_URL` to your deployed backend URL.
+- `DEV_BACKEND_MODE` as needed:
+  - `hosted` to always use hosted backend
+  - `auto` to try local dev backends first, then hosted fallback
 
 Example:
 
@@ -81,13 +84,28 @@ npm run android
 ## 5.2 Android Phone (USB)
 
 1. Enable Developer Options and USB Debugging.
-2. Build APK:
+2. Start Metro and run Android with USB port mapping (Metro `8081` + local API `5000`):
+
+```bash
+# terminal 1
+npm start
+# terminal 2
+npm run android:usb
+```
+
+If both emulator and phone are connected, run:
+
+```bash
+ANDROID_SERIAL=<device-id> npm run android:usb:device
+```
+
+3. If you prefer manual APK install, build debug APK:
 
 ```bash
 npm run apk:debug
 ```
 
-3. Install APK from computer:
+4. Install APK from computer:
 
 ```bash
 adb install -r android/app/build/outputs/apk/debug/app-debug.apk
@@ -119,13 +137,24 @@ This starts Metro and backend together.
 
 - If backend runs on your laptop and app runs on your phone, both must be on same Wi-Fi.
 - In `src/config/env.js`:
-  - set `USE_LOCAL_PHONE_BACKEND = true`
+  - set `DEV_BACKEND_MODE = 'phone_wifi'`
   - set `LOCAL_PHONE_API_BASE_URL` to your laptop LAN IP (example `http://192.168.1.20:5000/api`).
 
 ## 8. Troubleshooting
 
 - App installs but closes immediately:
   - Run `adb logcat` and check for runtime exception.
+- Red screen: "Unable to load script. Make sure you're either running Metro...":
+  - Start Metro with `npm start`.
+  - Run `adb reverse tcp:8081 tcp:8081`.
+  - Re-open app or run `npm run android:usb`.
+  - If needed, restart Metro cache with `npm run start:reset`.
+- Many `429 Too Many Requests` errors during local dev:
+  - Restart backend (`npm --prefix server run start`) to reset the rate-limit window.
+  - Optional dev-only setting in `server/.env`: `RATE_LIMIT_ENABLED=false`.
+- `adb: more than one device/emulator`:
+  - Set one target device ID:
+    - `ANDROID_SERIAL=<device-id> npm run android:usb:device`
 - Build fails with Java/JDK errors:
   - Ensure `android/gradle.properties` has valid `org.gradle.java.home` path.
 - Backend works locally but not on hosted URL:

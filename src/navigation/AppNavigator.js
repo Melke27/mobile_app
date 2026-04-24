@@ -19,7 +19,7 @@ const Tab = createBottomTabNavigator();
 
 const MainTabs = ({ isAdmin }) => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator initialRouteName="Home">
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Report" component={ReportItemScreen} />
       <Tab.Screen name="Search" component={SearchScreen} />
@@ -30,24 +30,16 @@ const MainTabs = ({ isAdmin }) => {
   );
 };
 
-const GuestTabs = () => (
-  <Tab.Navigator>
-    <Tab.Screen name="Home" component={HomeScreen} />
-    <Tab.Screen name="Search" component={SearchScreen} />
-    <Tab.Screen name="Account" component={LoginScreen} />
-  </Tab.Navigator>
-);
-
-const GuestStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="GuestMain" component={GuestTabs} options={{ headerShown: false }} />
+const AuthStack = () => (
+  <Stack.Navigator initialRouteName="Login">
+    <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
     <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Create Account' }} />
     <Stack.Screen name="ItemDetail" component={ItemDetailScreen} options={{ title: 'Item Details' }} />
   </Stack.Navigator>
 );
 
 const AppStack = ({ isAdmin }) => (
-  <Stack.Navigator>
+  <Stack.Navigator initialRouteName="Main">
     <Stack.Screen name="Main" options={{ headerShown: false }}>
       {() => <MainTabs isAdmin={isAdmin} />}
     </Stack.Screen>
@@ -67,7 +59,7 @@ const AppNavigator = () => {
     );
   }
 
-  return user ? <AppStack isAdmin={isAdmin} /> : <GuestStack />;
+  return user ? <AppStack isAdmin={isAdmin} /> : <AuthStack />;
 };
 
 export default AppNavigator;

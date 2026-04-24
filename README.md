@@ -147,6 +147,8 @@ cp .env.example .env
 npm run dev
 ```
 
+Tip: open `http://localhost:5000/api/health` and confirm `authConfigured: true` before testing registration.
+
 ### 8.2 Mobile App
 
 ```bash

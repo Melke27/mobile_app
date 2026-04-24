@@ -5,6 +5,27 @@ import { storageService } from '../services/storageService';
 
 const AuthContext = createContext(null);
 
+const resolveAuthErrorMessage = (error, fallbackMessage) => {
+  const responseMessage = error?.response?.data?.message;
+  if (responseMessage) {
+    return responseMessage;
+  }
+
+  if (error?.response?.status === 429) {
+    return 'Too many requests. Please wait a moment and try again.';
+  }
+
+  if (error?.code === 'ECONNABORTED') {
+    return 'Request timed out. Check your internet or backend server and try again.';
+  }
+
+  if (!error?.response) {
+    return 'Could not reach the server. Make sure backend is running and phone is connected to Metro/ADB reverse.';
+  }
+
+  return fallbackMessage;
+};
+
 export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,7 +68,7 @@ export const AuthProvider = ({ children }) => {
       const data = await authService.login(email, password);
       await persistSession(data);
     } catch (error) {
-      Alert.alert('Login failed', error?.response?.data?.message || 'Please try again.');
+      Alert.alert('Login failed', resolveAuthErrorMessage(error, 'Please try again.'));
       throw error;
     }
   };
@@ -57,7 +78,7 @@ export const AuthProvider = ({ children }) => {
       const data = await authService.register(payload);
       await persistSession(data);
     } catch (error) {
-      Alert.alert('Registration failed', error?.response?.data?.message || 'Please try again.');
+      Alert.alert('Registration failed', resolveAuthErrorMessage(error, 'Please try again.'));
       throw error;
     }
   };

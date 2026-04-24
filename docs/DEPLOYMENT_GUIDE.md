@@ -53,6 +53,7 @@ Because pricing can change, always verify current plan limits before deployment.
    - `RATE_LIMIT_MAX=500`
 6. Deploy and confirm health endpoint:
    - `https://<your-service>.onrender.com/api/health`
+   - Confirm response includes `"authConfigured": true`
 
 ## 4. Connect Mobile App to Hosted Backend
 
@@ -160,3 +161,7 @@ This starts Metro and backend together.
 - Backend works locally but not on hosted URL:
   - Verify `MONGODB_URI` and Render environment variables.
   - Check `https://<service>/api/health`.
+- Registration fails on hosted backend with `Server auth is not configured` or `secretOrPrivateKey must have a value`:
+  - In Render Dashboard -> Service -> Environment, add `JWT_SECRET=<strong-random-value>`.
+  - Click **Manual Deploy** -> **Deploy latest commit**.
+  - Recheck `https://<service>/api/health` and confirm `"authConfigured": true`.

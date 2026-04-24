@@ -39,7 +39,12 @@ if (rateLimitEnabled) {
 }
 
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, service: 'campus-lost-found-api' });
+  res.json({
+    ok: true,
+    service: 'campus-lost-found-api',
+    authConfigured: Boolean(process.env.JWT_SECRET && process.env.JWT_SECRET.trim()),
+    dbConfigured: Boolean(process.env.MONGODB_URI && process.env.MONGODB_URI.trim()),
+  });
 });
 
 app.use('/api/auth', authRoutes);

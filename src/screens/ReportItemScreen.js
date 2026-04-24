@@ -19,6 +19,7 @@ import { permissionsService } from '../services/permissionsService';
 import { storageService } from '../services/storageService';
 import { DEFAULT_CAMPUS } from '../config/env';
 import { CAMPUSES, CATEGORIES } from '../utils/constants';
+import { generateItemImageUrl } from '../utils/imageFallback';
 import { validateReport } from '../utils/validators';
 
 const defaultForm = {
@@ -80,6 +81,10 @@ const ReportItemScreen = () => {
 
   const updateForm = (nextPatch) => {
     setForm((prev) => ({ ...prev, ...nextPatch }));
+  };
+
+  const applyGeneratedImage = () => {
+    updateForm({ imageUrl: generateItemImageUrl(form) });
   };
 
   const attachPhoto = async (source) => {
@@ -144,6 +149,7 @@ const ReportItemScreen = () => {
     try {
       await createReport({
         ...form,
+        imageUrl: form.imageUrl || generateItemImageUrl(form),
         reportedBy: user._id,
       });
       skipNextDraftPersist.current = true;
@@ -184,12 +190,14 @@ const ReportItemScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="Title (e.g., Black Samsung Phone)"
+            placeholderTextColor="#6a7f86"
             value={form.title}
             onChangeText={(title) => updateForm({ title })}
           />
           <TextInput
             style={[styles.input, styles.multiline]}
             placeholder="Describe key details"
+            placeholderTextColor="#6a7f86"
             multiline
             value={form.description}
             onChangeText={(description) => updateForm({ description })}
@@ -222,6 +230,7 @@ const ReportItemScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="Location Description (e.g., Library Block A)"
+            placeholderTextColor="#6a7f86"
             value={form.locationText}
             onChangeText={(locationText) => updateForm({ locationText })}
           />
@@ -239,6 +248,12 @@ const ReportItemScreen = () => {
             <Pressable style={styles.secondaryButton} onPress={attachLocation}>
               <Text style={styles.secondaryText}>{form.location ? 'GPS Added' : 'Add GPS'}</Text>
             </Pressable>
+            <Pressable style={styles.secondaryButton} onPress={applyGeneratedImage}>
+              <Text style={styles.secondaryText}>Generate Image</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.actionRow}>
             <Pressable style={[styles.secondaryButton, styles.secondaryDanger]} onPress={clearDraft}>
               <Text style={[styles.secondaryText, styles.secondaryDangerText]}>Clear Draft</Text>
             </Pressable>
@@ -281,6 +296,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: '#fff',
     marginBottom: 10,
+    color: '#12343b',
   },
   multiline: { minHeight: 90, textAlignVertical: 'top' },
   sectionLabel: { fontWeight: '700', color: '#33535a', marginBottom: 6, marginTop: 4 },

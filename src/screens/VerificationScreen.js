@@ -53,6 +53,7 @@ const VerificationScreen = () => {
             <TextInput
               style={styles.input}
               placeholder="Item ID"
+              placeholderTextColor="#6a7f86"
               value={itemId}
               onChangeText={setItemId}
             />
@@ -67,6 +68,7 @@ const VerificationScreen = () => {
               value={token}
               onChangeText={setToken}
               placeholder="Token will appear here"
+              placeholderTextColor="#6a7f86"
             />
 
             <Pressable style={[styles.button, styles.alt]} onPress={verify}>
@@ -103,6 +105,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     marginBottom: 10,
+    color: '#12343b',
+    backgroundColor: '#fff',
   },
   multiline: { minHeight: 72, textAlignVertical: 'top' },
   button: { backgroundColor: '#0b7285', borderRadius: 8, paddingVertical: 11, alignItems: 'center', marginBottom: 10 },

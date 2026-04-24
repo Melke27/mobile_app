@@ -19,6 +19,7 @@ const FilterBar = ({ filters, onChange, onSearch, onReset }) => {
       <TextInput
         style={styles.input}
         placeholder="Search title, description, or location"
+        placeholderTextColor="#6a7f86"
         value={filters.keyword}
         onChangeText={(text) => onChange({ ...filters, keyword: text })}
       />
@@ -27,12 +28,14 @@ const FilterBar = ({ filters, onChange, onSearch, onReset }) => {
         <TextInput
           style={[styles.input, styles.twoColInput]}
           placeholder="Category"
+          placeholderTextColor="#6a7f86"
           value={filters.category}
           onChangeText={(text) => onChange({ ...filters, category: text })}
         />
         <TextInput
           style={[styles.input, styles.twoColInput]}
           placeholder="Campus"
+          placeholderTextColor="#6a7f86"
           value={filters.campus}
           onChangeText={(text) => onChange({ ...filters, campus: text })}
         />
@@ -66,6 +69,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: '#fff',
     marginBottom: 8,
+    color: '#12343b',
   },
   twoColRow: { flexDirection: 'row', gap: 8 },
   twoColInput: { flex: 1 },

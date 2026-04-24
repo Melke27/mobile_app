@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { useItems } from '../context/ItemsContext';
+import { useAuth } from '../context/AuthContext';
 import ItemCard from '../components/ItemCard';
 import EmptyState from '../components/EmptyState';
 import { adamaCampusGallery, adamaHeroImage } from '../assets/images';
@@ -25,6 +26,7 @@ const ADAMA_COORDINATE = {
 
 const HomeScreen = ({ navigation }) => {
   const { items, loadLatest, loading } = useItems();
+  const { user } = useAuth();
 
   const init = useCallback(() => {
     loadLatest().catch((error) => console.error(error));
@@ -56,6 +58,11 @@ const HomeScreen = ({ navigation }) => {
     }
   }, []);
 
+  const requireLogin = useCallback(() => {
+    Alert.alert('Login required', 'Please sign in first to use this feature.');
+    navigation.navigate('Account');
+  }, [navigation]);
+
   const listHeader = (
     <View style={styles.headerContainer}>
       <ImageBackground source={adamaHeroImage} style={styles.hero} imageStyle={styles.heroImage}>
@@ -66,7 +73,10 @@ const HomeScreen = ({ navigation }) => {
       </ImageBackground>
 
       <View style={styles.actionGrid}>
-        <Pressable style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]} onPress={() => navigation.navigate('Report')}>
+        <Pressable
+          style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}
+          onPress={() => (user ? navigation.navigate('Report') : requireLogin())}
+        >
           <Text style={styles.actionTitle}>Report Item</Text>
           <Text style={styles.actionMeta}>Lost or found</Text>
         </Pressable>
@@ -74,7 +84,10 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.actionTitle}>Search Reports</Text>
           <Text style={styles.actionMeta}>Filter by campus</Text>
         </Pressable>
-        <Pressable style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]} onPress={() => navigation.navigate('Alerts')}>
+        <Pressable
+          style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}
+          onPress={() => (user ? navigation.navigate('Alerts') : requireLogin())}
+        >
           <Text style={styles.actionTitle}>Check Alerts</Text>
           <Text style={styles.actionMeta}>Stay updated</Text>
         </Pressable>

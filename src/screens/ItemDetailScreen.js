@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -13,6 +14,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useItems } from '../context/ItemsContext';
 import { itemService } from '../services/itemService';
+import { resolveItemImageUrl } from '../utils/imageFallback';
 
 const ItemDetailScreen = ({ route, navigation }) => {
   const initial = route.params?.item || {};
@@ -54,6 +56,11 @@ const ItemDetailScreen = ({ route, navigation }) => {
         return;
       }
 
+      if (!user?._id) {
+        setMatches([]);
+        return;
+      }
+
       try {
         const found = await getMatchesFor(item);
         setMatches(found);
@@ -63,9 +70,19 @@ const ItemDetailScreen = ({ route, navigation }) => {
     };
 
     loadMatches();
-  }, [getMatchesFor, item]);
+  }, [getMatchesFor, item, user?._id]);
+
+  const openAccountTab = () => {
+    navigation.navigate('GuestMain', { screen: 'Account' });
+  };
 
   const onRecovered = async () => {
+    if (!user?._id) {
+      Alert.alert('Login required', 'Please sign in to update item status.');
+      openAccountTab();
+      return;
+    }
+
     if (!item?._id) {
       return;
     }
@@ -80,6 +97,12 @@ const ItemDetailScreen = ({ route, navigation }) => {
   };
 
   const onFlag = async () => {
+    if (!user?._id) {
+      Alert.alert('Login required', 'Please sign in to flag a report.');
+      openAccountTab();
+      return;
+    }
+
     if (!item?._id) {
       return;
     }
@@ -102,11 +125,13 @@ const ItemDetailScreen = ({ route, navigation }) => {
 
   const receiverId = item?.reportedBy?._id;
   const isRecovered = item?.status === 'recovered';
-  const canChat = receiverId && receiverId !== user?._id;
+  const canChat = Boolean(user?._id) && receiverId && receiverId !== user?._id;
+  const isGuest = !user?._id;
 
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView contentContainerStyle={styles.content}>
+        <Image source={{ uri: resolveItemImageUrl(item) }} style={styles.itemImage} resizeMode="cover" />
         <Text style={styles.title}>{item.title || 'Item Details'}</Text>
         <Text style={styles.badge}>{(item.status || 'unknown').toUpperCase()}</Text>
         <Text style={styles.info}>{item.description || 'No description'}</Text>
@@ -118,25 +143,38 @@ const ItemDetailScreen = ({ route, navigation }) => {
           <Text style={styles.info}>Reported at: {new Date(item.createdAt).toLocaleString()}</Text>
         )}
 
-        <View style={styles.row}>
-          <Pressable
-            style={[styles.button, isRecovered && styles.disabledButton]}
-            onPress={onRecovered}
-            disabled={isRecovered}
-          >
-            <Text style={styles.buttonText}>{isRecovered ? 'Already Recovered' : 'Mark Recovered'}</Text>
-          </Pressable>
-        </View>
+        {isGuest ? (
+          <View style={styles.guestCard}>
+            <Text style={styles.guestTitle}>Sign in for full actions</Text>
+            <Text style={styles.guestMeta}>Login to report, flag, recover items, and chat with reporters.</Text>
+            <Pressable style={[styles.button, styles.authButton]} onPress={openAccountTab}>
+              <Text style={styles.buttonText}>Go to Login</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <>
+            <View style={styles.row}>
+              <Pressable
+                style={[styles.button, isRecovered && styles.disabledButton]}
+                onPress={onRecovered}
+                disabled={isRecovered}
+              >
+                <Text style={styles.buttonText}>{isRecovered ? 'Already Recovered' : 'Mark Recovered'}</Text>
+              </Pressable>
+            </View>
 
-        <TextInput
-          style={styles.flagInput}
-          value={flagReason}
-          onChangeText={setFlagReason}
-          placeholder="Reason for flagging"
-        />
-        <Pressable style={[styles.button, styles.warn]} onPress={onFlag}>
-          <Text style={styles.buttonText}>Flag Post</Text>
-        </Pressable>
+            <TextInput
+              style={styles.flagInput}
+              value={flagReason}
+              onChangeText={setFlagReason}
+              placeholder="Reason for flagging"
+              placeholderTextColor="#6a7f86"
+            />
+            <Pressable style={[styles.button, styles.warn]} onPress={onFlag}>
+              <Text style={styles.buttonText}>Flag Post</Text>
+            </Pressable>
+          </>
+        )}
 
         {canChat && (
           <Pressable
@@ -148,7 +186,9 @@ const ItemDetailScreen = ({ route, navigation }) => {
         )}
 
         <Text style={styles.sectionTitle}>Potential Matches</Text>
-        {matches.length ? (
+        {isGuest ? (
+          <Text style={styles.matchMeta}>Login to see personalized match scoring.</Text>
+        ) : matches.length ? (
           matches.slice(0, 5).map((entry, idx) => {
             const candidate = entry.item || entry;
             const score = entry.score;
@@ -174,6 +214,13 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#f6fafb' },
   loaderWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   content: { padding: 14, paddingBottom: 24 },
+  itemImage: {
+    width: '100%',
+    height: 210,
+    borderRadius: 12,
+    backgroundColor: '#dfecef',
+    marginBottom: 12,
+  },
   title: { fontSize: 24, fontWeight: '800', color: '#12343b' },
   badge: {
     alignSelf: 'flex-start',
@@ -197,6 +244,7 @@ const styles = StyleSheet.create({
   disabledButton: { backgroundColor: '#8ea8ae' },
   warn: { backgroundColor: '#b04b4b', marginTop: 8 },
   chatButton: { marginTop: 10, backgroundColor: '#1d7e3f' },
+  authButton: { marginTop: 10, backgroundColor: '#0b7285' },
   buttonText: { color: '#fff', fontWeight: '700' },
   flagInput: {
     marginTop: 10,
@@ -206,8 +254,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     backgroundColor: '#fff',
+    color: '#12343b',
   },
   sectionTitle: { marginTop: 20, fontSize: 18, fontWeight: '800', color: '#12343b', marginBottom: 8 },
+  guestCard: {
+    marginTop: 16,
+    backgroundColor: '#eef7f9',
+    borderWidth: 1,
+    borderColor: '#c8dfe5',
+    borderRadius: 10,
+    padding: 12,
+  },
+  guestTitle: { fontWeight: '800', color: '#15424c', fontSize: 15 },
+  guestMeta: { marginTop: 5, color: '#4a6d75' },
   matchCard: {
     backgroundColor: '#fff',
     borderWidth: 1,

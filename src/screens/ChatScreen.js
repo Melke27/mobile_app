@@ -105,6 +105,7 @@ const ChatScreen = ({ route }) => {
         <TextInput
           style={styles.input}
           placeholder="Type message"
+          placeholderTextColor="#6a7f86"
           value={text}
           onChangeText={setText}
           editable={!sending}
@@ -147,6 +148,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     marginRight: 8,
+    color: '#12343b',
+    backgroundColor: '#fff',
   },
   send: { backgroundColor: '#0b7285', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 10 },
   sendDisabled: { backgroundColor: '#87aeb5' },

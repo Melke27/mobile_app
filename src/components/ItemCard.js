@@ -1,9 +1,11 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { resolveItemImageUrl } from '../utils/imageFallback';
 
 const ItemCard = ({ item, onPress }) => {
   const statusStyle =
     item.status === 'lost' ? styles.lost : item.status === 'recovered' ? styles.recovered : styles.found;
+  const imageSource = { uri: resolveItemImageUrl(item) };
 
   return (
     <Pressable
@@ -13,6 +15,7 @@ const ItemCard = ({ item, onPress }) => {
       hitSlop={4}
       android_ripple={{ color: '#d8e8ed' }}
     >
+      <Image source={imageSource} style={styles.image} resizeMode="cover" />
       <View style={styles.headerRow}>
         <Text style={styles.title} numberOfLines={1}>
           {item.title}
@@ -36,6 +39,13 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     borderWidth: 1,
     borderColor: '#dbe7ea',
+  },
+  image: {
+    width: '100%',
+    height: 128,
+    borderRadius: 10,
+    marginBottom: 10,
+    backgroundColor: '#dfecef',
   },
   cardPressed: {
     opacity: 0.84,

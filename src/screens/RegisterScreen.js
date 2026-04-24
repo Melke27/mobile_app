@@ -58,10 +58,17 @@ const RegisterScreen = () => {
           <View style={styles.card}>
             <Text style={styles.title}>Create Account</Text>
 
-            <TextInput style={styles.input} placeholder="Full name" value={name} onChangeText={setName} />
+            <TextInput
+              style={styles.input}
+              placeholder="Full name"
+              placeholderTextColor="#6a7f86"
+              value={name}
+              onChangeText={setName}
+            />
             <TextInput
               style={styles.input}
               placeholder="Email"
+              placeholderTextColor="#6a7f86"
               keyboardType="email-address"
               autoCapitalize="none"
               value={email}
@@ -71,11 +78,18 @@ const RegisterScreen = () => {
             <TextInput
               style={styles.input}
               placeholder="Password"
+              placeholderTextColor="#6a7f86"
               secureTextEntry
               value={password}
               onChangeText={setPassword}
             />
-            <TextInput style={styles.input} placeholder="Campus" value={campus} onChangeText={setCampus} />
+            <TextInput
+              style={styles.input}
+              placeholder="Campus"
+              placeholderTextColor="#6a7f86"
+              value={campus}
+              onChangeText={setCampus}
+            />
 
             <Pressable style={[styles.button, submitting && styles.buttonDisabled]} onPress={onSubmit} disabled={submitting}>
               <Text style={styles.buttonText}>{submitting ? 'Creating...' : 'Create Account'}</Text>
@@ -100,6 +114,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     marginBottom: 10,
+    color: '#12343b',
   },
   button: { backgroundColor: '#0b7285', borderRadius: 8, paddingVertical: 12, alignItems: 'center' },
   buttonDisabled: { backgroundColor: '#86a9b2' },

@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# react native
+android/app/build/
+android/.gradle/
+ios/build/
+ios/Pods/
+
+# metro
+.expo/
+.expo-shared/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# environment
+.env
+.env.*
+
+# misc
+.DS_Store
+.idea/
+.codex
+android/local.properties

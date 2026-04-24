@@ -1,0 +1,58 @@
+import apiClient from './apiClient';
+
+export const itemService = {
+  async createReport(report) {
+    const { data } = await apiClient.post('/items', report);
+    return data;
+  },
+
+  async getLatestReports(params = {}) {
+    const { data } = await apiClient.get('/items', { params });
+    return data;
+  },
+
+  async searchReports(filters = {}) {
+    const { data } = await apiClient.get('/items', { params: filters });
+    return data;
+  },
+
+  async getById(id) {
+    const { data } = await apiClient.get(`/items/${id}`);
+    return data;
+  },
+
+  async getFlaggedReports(params = {}) {
+    const { data } = await apiClient.get('/items/flagged/list', { params });
+    return data;
+  },
+
+  async getAdminStats() {
+    const { data } = await apiClient.get('/items/admin/stats');
+    return data;
+  },
+
+  async reviewFlaggedReport(id, action, note = '') {
+    const { data } = await apiClient.patch(`/items/${id}/review`, { action, note });
+    return data;
+  },
+
+  async flagReport(id, reason) {
+    const { data } = await apiClient.patch(`/items/${id}/flag`, { reason });
+    return data;
+  },
+
+  async markRecovered(id) {
+    const { data } = await apiClient.patch(`/items/${id}/recovered`);
+    return data;
+  },
+
+  async deleteReport(id) {
+    const { data } = await apiClient.delete(`/items/${id}`);
+    return data;
+  },
+
+  async getPotentialMatches(id) {
+    const { data } = await apiClient.get(`/items/${id}/matches`);
+    return data;
+  },
+};

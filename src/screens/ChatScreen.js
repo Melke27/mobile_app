@@ -1,0 +1,156 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  Pressable,
+  RefreshControl,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { useAuth } from '../context/AuthContext';
+import { chatService } from '../services/chatService';
+
+const resolveId = (value) => {
+  if (!value) {
+    return '';
+  }
+
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  return value._id || '';
+};
+
+const ChatScreen = ({ route }) => {
+  const { item, otherUserId } = route.params;
+  const { user } = useAuth();
+
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await chatService.getConversation(item._id, otherUserId);
+      setMessages(data.messages || []);
+    } catch (error) {
+      Alert.alert('Chat error', error?.response?.data?.message || 'Could not load messages.');
+    } finally {
+      setLoading(false);
+    }
+  }, [item._id, otherUserId]);
+
+  useEffect(() => {
+    load();
+
+    const timer = setInterval(() => {
+      load().catch(() => undefined);
+    }, 6000);
+
+    return () => clearInterval(timer);
+  }, [load]);
+
+  const send = async () => {
+    const message = text.trim();
+    if (!message || sending) {
+      return;
+    }
+
+    setSending(true);
+    try {
+      await chatService.sendMessage({
+        itemId: item._id,
+        receiverId: otherUserId,
+        message,
+      });
+      setText('');
+      await load();
+    } catch (error) {
+      Alert.alert('Send failed', error?.response?.data?.message || 'Please try again.');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.root}>
+      <Text style={styles.header}>Chat about: {item.title || 'Item'}</Text>
+
+      <FlatList
+        data={messages}
+        keyExtractor={(m) => m._id}
+        keyboardShouldPersistTaps="handled"
+        initialNumToRender={12}
+        maxToRenderPerBatch={12}
+        windowSize={7}
+        contentContainerStyle={{ padding: 12 }}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
+        renderItem={({ item: message }) => {
+          const mine = resolveId(message.senderId) === user._id;
+          return (
+            <View style={[styles.bubble, mine ? styles.mine : styles.theirs]}>
+              <Text style={[styles.message, mine && styles.myMessage]}>{message.message}</Text>
+            </View>
+          );
+        }}
+      />
+
+      <View style={styles.composer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Type message"
+          value={text}
+          onChangeText={setText}
+          editable={!sending}
+        />
+        <Pressable style={[styles.send, sending && styles.sendDisabled]} onPress={send} disabled={sending}>
+          <Text style={styles.sendText}>{sending ? '...' : 'Send'}</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#f6fafb' },
+  header: { padding: 12, fontWeight: '700', color: '#1e434a' },
+  bubble: {
+    maxWidth: '82%',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  mine: { backgroundColor: '#0b7285', alignSelf: 'flex-end' },
+  theirs: { backgroundColor: '#e2eef1', alignSelf: 'flex-start' },
+  message: { color: '#172a2f' },
+  myMessage: { color: '#fff' },
+  composer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#d4e0e4',
+    backgroundColor: '#fff',
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#c6d6db',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginRight: 8,
+  },
+  send: { backgroundColor: '#0b7285', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 10 },
+  sendDisabled: { backgroundColor: '#87aeb5' },
+  sendText: { color: '#fff', fontWeight: '700' },
+});
+
+export default ChatScreen;

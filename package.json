@@ -1,0 +1,43 @@
+{
+  "name": "campus-lost-found-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lost and Found Mobile Application for Campus (React Native client)",
+  "scripts": {
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "apk:debug": "cd android && ./gradlew assembleDebug",
+    "apk:release": "cd android && ./gradlew assembleRelease",
+    "install:phone": "adb install -r android/app/build/outputs/apk/debug/app-debug.apk",
+    "server:dev": "npm --prefix server run dev",
+    "server:start": "npm --prefix server run start",
+    "dev:all": "concurrently -k \"npm:server:dev\" \"npm:start\"",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-native-community/geolocation": "^3.4.0",
+    "@react-navigation/bottom-tabs": "^6.6.1",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/native-stack": "^6.11.0",
+    "axios": "^1.8.3",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
+    "react-native-image-picker": "^7.2.3",
+    "react-native-maps": "^1.10.0",
+    "react-native-safe-area-context": "^4.12.0",
+    "react-native-screens": "^3.34.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/runtime": "^7.25.0",
+    "@react-native/babel-preset": "^0.74.87",
+    "@react-native/eslint-config": "^0.74.85",
+    "@react-native/metro-config": "^0.74.87",
+    "concurrently": "^9.2.1",
+    "eslint": "^8.57.1",
+    "jest": "^29.7.0",
+    "metro-react-native-babel-preset": "^0.77.0"
+  }
+}

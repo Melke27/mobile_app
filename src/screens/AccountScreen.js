@@ -13,9 +13,11 @@ import {
   View,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { useItems } from '../context/ItemsContext';
 import { DEFAULT_CAMPUS } from '../config/env';
 import { imageService } from '../services/imageService';
 import { permissionsService } from '../services/permissionsService';
+import { storageService } from '../services/storageService';
 import { isValidEmail } from '../utils/validators';
 
 const getInitials = (name = '') => {
@@ -42,6 +44,7 @@ const toProfileImageValue = (asset) => {
 
 const AccountScreen = () => {
   const { user, updateProfile, updatePassword, logout } = useAuth();
+  const { clearSavedItems } = useItems();
   const [profileForm, setProfileForm] = useState({
     name: '',
     email: '',
@@ -56,6 +59,7 @@ const AccountScreen = () => {
   const [savingProfile, setSavingProfile] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [changingImage, setChangingImage] = useState(false);
+  const [clearingData, setClearingData] = useState(false);
 
   useEffect(() => {
     setProfileForm({
@@ -176,6 +180,51 @@ const AccountScreen = () => {
     ]);
   };
 
+  const onClearSavedItems = () => {
+    Alert.alert('Clear Saved Items', 'Remove all your bookmarked/saved items from this phone?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Clear',
+        style: 'destructive',
+        onPress: async () => {
+          setClearingData(true);
+          try {
+            await clearSavedItems();
+            Alert.alert('Done', 'Saved items cleared.');
+          } finally {
+            setClearingData(false);
+          }
+        },
+      },
+    ]);
+  };
+
+  const onClearDraftAndCache = () => {
+    Alert.alert(
+      'Clear Draft + Cache',
+      'This clears report draft and cached feed data on this phone. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: async () => {
+            setClearingData(true);
+            try {
+              await Promise.all([
+                storageService.remove(storageService.keys.LAST_REPORT_DRAFT),
+                storageService.remove(storageService.keys.CACHED_REPORTS),
+              ]);
+              Alert.alert('Done', 'Draft and cache cleared.');
+            } finally {
+              setClearingData(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.root}>
       <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -279,8 +328,14 @@ const AccountScreen = () => {
 
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Account Actions</Text>
+            <Pressable style={styles.actionButton} onPress={onClearSavedItems} disabled={clearingData}>
+              <Text style={styles.actionButtonText}>{clearingData ? 'Working...' : 'Clear Saved Items'}</Text>
+            </Pressable>
+            <Pressable style={styles.actionButton} onPress={onClearDraftAndCache} disabled={clearingData}>
+              <Text style={styles.actionButtonText}>{clearingData ? 'Working...' : 'Clear Draft + Cache'}</Text>
+            </Pressable>
             <Pressable style={styles.logoutButton} onPress={onLogout}>
-              <Text style={styles.logoutText}>Logout</Text>
+              <Text style={styles.logoutText}>Sign Out</Text>
             </Pressable>
           </View>
         </ScrollView>
@@ -348,6 +403,16 @@ const styles = StyleSheet.create({
   primaryButton: { backgroundColor: '#0b7285', borderRadius: 8, paddingVertical: 12, alignItems: 'center' },
   primaryButtonDisabled: { backgroundColor: '#86a9b2' },
   primaryButtonText: { color: '#fff', fontWeight: '700' },
+  actionButton: {
+    borderWidth: 1,
+    borderColor: '#c0d6dc',
+    backgroundColor: '#f7fcfd',
+    borderRadius: 8,
+    paddingVertical: 11,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  actionButtonText: { color: '#21464f', fontWeight: '700' },
   logoutButton: {
     borderWidth: 1,
     borderColor: '#e3b1b1',
@@ -355,6 +420,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 11,
     alignItems: 'center',
+    marginTop: 2,
   },
   logoutText: { color: '#9f3333', fontWeight: '800' },
 });

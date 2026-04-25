@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useItems } from '../context/ItemsContext';
 import { useAuth } from '../context/AuthContext';
+import AppIcon from '../components/AppIcon';
 import { imageService } from '../services/imageService';
 import { locationService } from '../services/locationService';
 import { permissionsService } from '../services/permissionsService';
@@ -175,9 +176,9 @@ const ReportItemScreen = () => {
           <Text style={styles.subtitle}>Add photo, location, and details for faster matching.</Text>
 
           <View style={styles.pointsRow}>
-            <Text style={styles.point}>✅ Title</Text>
-            <Text style={styles.point}>🖼️ Photo</Text>
-            <Text style={styles.point}>📍 Location</Text>
+            <Text style={styles.point}><AppIcon name="check-circle-outline" size={13} color="#1f5360" /> Title</Text>
+            <Text style={styles.point}><AppIcon name="image-outline" size={13} color="#1f5360" /> Photo</Text>
+            <Text style={styles.point}><AppIcon name="map-marker-outline" size={13} color="#1f5360" /> Location</Text>
           </View>
 
           <View style={styles.segmentRow}>
@@ -245,19 +246,21 @@ const ReportItemScreen = () => {
 
           <View style={styles.actionRow}>
             <Pressable style={styles.secondaryButton} onPress={() => attachPhoto('camera')}>
-              <Text style={styles.secondaryText}>📸 Use Camera</Text>
+              <Text style={styles.secondaryText}><AppIcon name="camera-outline" size={14} color="#15545f" /> Use Camera</Text>
             </Pressable>
             <Pressable style={styles.secondaryButton} onPress={() => attachPhoto('gallery')}>
-              <Text style={styles.secondaryText}>🖼️ From Gallery</Text>
+              <Text style={styles.secondaryText}><AppIcon name="image-outline" size={14} color="#15545f" /> From Gallery</Text>
             </Pressable>
           </View>
 
           <View style={styles.actionRow}>
             <Pressable style={styles.secondaryButton} onPress={attachLocation}>
-              <Text style={styles.secondaryText}>{form.location ? '📍 GPS Added' : '📍 Add GPS'}</Text>
+              <Text style={styles.secondaryText}>
+                <AppIcon name="map-marker-outline" size={14} color="#15545f" /> {form.location ? 'GPS Added' : 'Add GPS'}
+              </Text>
             </Pressable>
             <Pressable style={styles.secondaryButton} onPress={applyGeneratedImage}>
-              <Text style={styles.secondaryText}>🎨 Generate Image</Text>
+              <Text style={styles.secondaryText}><AppIcon name="palette-outline" size={14} color="#15545f" /> Generate Image</Text>
             </Pressable>
           </View>
 

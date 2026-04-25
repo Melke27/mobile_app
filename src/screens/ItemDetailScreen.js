@@ -15,6 +15,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useItems } from '../context/ItemsContext';
 import { itemService } from '../services/itemService';
+import AppIcon from '../components/AppIcon';
 import { generateItemImageUrl, resolveItemImageUrl } from '../utils/imageFallback';
 
 const ItemDetailScreen = ({ route, navigation }) => {
@@ -162,6 +163,12 @@ const ItemDetailScreen = ({ route, navigation }) => {
   const canChat = Boolean(user?._id) && receiverId && receiverId !== user?._id;
   const isGuest = !user?._id;
   const saved = isItemSaved(item?._id);
+  const statusIconName =
+    item.status === 'lost'
+      ? 'compass-outline'
+      : item.status === 'recovered'
+        ? 'check-circle-outline'
+        : 'package-variant-closed';
 
   return (
     <SafeAreaView style={styles.root}>
@@ -174,15 +181,15 @@ const ItemDetailScreen = ({ route, navigation }) => {
         />
         <Text style={styles.title}>{item.title || 'Item Details'}</Text>
         <Text style={styles.badge}>
-          {item.status === 'lost' ? '🧭' : item.status === 'recovered' ? '✅' : '📦'} {(item.status || 'unknown').toUpperCase()}
+          <AppIcon name={statusIconName} size={14} color="#145866" /> {(item.status || 'unknown').toUpperCase()}
         </Text>
         <Text style={styles.info}>{item.description || 'No description'}</Text>
-        <Text style={styles.info}>🏷️ Category: {item.category || 'N/A'}</Text>
-        <Text style={styles.info}>🏫 Campus: {item.campus || 'N/A'}</Text>
-        <Text style={styles.info}>📍 Location: {item.locationText || 'Not provided'}</Text>
-        <Text style={styles.info}>👤 Reported by: {item?.reportedBy?.name || 'Unknown'}</Text>
+        <Text style={styles.info}><AppIcon name="tag-outline" size={14} color="#33474c" /> Category: {item.category || 'N/A'}</Text>
+        <Text style={styles.info}><AppIcon name="school-outline" size={14} color="#33474c" /> Campus: {item.campus || 'N/A'}</Text>
+        <Text style={styles.info}><AppIcon name="map-marker-outline" size={14} color="#33474c" /> Location: {item.locationText || 'Not provided'}</Text>
+        <Text style={styles.info}><AppIcon name="account-outline" size={14} color="#33474c" /> Reported by: {item?.reportedBy?.name || 'Unknown'}</Text>
         {item?.createdAt && (
-          <Text style={styles.info}>🕒 Reported at: {new Date(item.createdAt).toLocaleString()}</Text>
+          <Text style={styles.info}><AppIcon name="clock-time-four-outline" size={14} color="#33474c" /> Reported at: {new Date(item.createdAt).toLocaleString()}</Text>
         )}
 
         {isGuest ? (
@@ -190,7 +197,7 @@ const ItemDetailScreen = ({ route, navigation }) => {
             <Text style={styles.guestTitle}>Sign in for full actions</Text>
             <Text style={styles.guestMeta}>Login to report, flag, recover items, and chat with reporters.</Text>
             <Pressable style={[styles.button, styles.authButton]} onPress={openAccountTab}>
-              <Text style={styles.buttonText}>🔐 Go to Login</Text>
+              <Text style={styles.buttonText}>Go to Login</Text>
             </Pressable>
           </View>
         ) : (
@@ -201,7 +208,7 @@ const ItemDetailScreen = ({ route, navigation }) => {
                 onPress={onRecovered}
                 disabled={isRecovered}
               >
-                <Text style={styles.buttonText}>{isRecovered ? '✅ Already Recovered' : '✅ Mark Recovered'}</Text>
+                <Text style={styles.buttonText}>{isRecovered ? 'Already Recovered' : 'Mark Recovered'}</Text>
               </Pressable>
             </View>
 
@@ -213,7 +220,7 @@ const ItemDetailScreen = ({ route, navigation }) => {
               placeholderTextColor="#6a7f86"
             />
             <Pressable style={[styles.button, styles.warn]} onPress={onFlag}>
-              <Text style={styles.buttonText}>🚩 Flag Post</Text>
+              <Text style={styles.buttonText}>Flag Post</Text>
             </Pressable>
           </>
         )}
@@ -223,18 +230,18 @@ const ItemDetailScreen = ({ route, navigation }) => {
             style={[styles.button, styles.chatButton]}
             onPress={() => navigation.navigate('Chat', { item, otherUserId: receiverId })}
           >
-            <Text style={styles.buttonText}>💬 Chat with Reporter</Text>
+            <Text style={styles.buttonText}>Chat with Reporter</Text>
           </Pressable>
         )}
 
         <View style={styles.row}>
           <Pressable style={[styles.button, styles.saveButton]} onPress={onToggleSaved}>
-            <Text style={styles.buttonText}>{saved ? '⭐ Remove from Saved' : '⭐ Save Item'}</Text>
+            <Text style={styles.buttonText}>{saved ? 'Remove from Saved' : 'Save Item'}</Text>
           </Pressable>
         </View>
         <View style={styles.row}>
           <Pressable style={[styles.button, styles.shareButton]} onPress={onShare}>
-            <Text style={styles.buttonText}>📤 Share Item</Text>
+            <Text style={styles.buttonText}>Share Item</Text>
           </Pressable>
         </View>
 

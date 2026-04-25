@@ -17,6 +17,7 @@ import { useItems } from '../context/ItemsContext';
 import { useAuth } from '../context/AuthContext';
 import ItemCard from '../components/ItemCard';
 import EmptyState from '../components/EmptyState';
+import AppIcon from '../components/AppIcon';
 import { adamaCampusGallery, adamaHeroImage } from '../assets/images';
 
 const ADAMA_COORDINATE = {
@@ -77,22 +78,34 @@ const HomeScreen = ({ navigation }) => {
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}
           onPress={() => (user ? navigation.navigate('Report') : requireLogin())}
         >
-          <Text style={styles.actionTitle}>📝 Report Item</Text>
+          <View style={styles.actionTitleRow}>
+            <AppIcon name="file-document-edit-outline" size={16} color="#153742" />
+            <Text style={styles.actionTitle}>Report Item</Text>
+          </View>
           <Text style={styles.actionMeta}>Lost or found</Text>
         </Pressable>
         <Pressable style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]} onPress={() => navigation.navigate('Search')}>
-          <Text style={styles.actionTitle}>🔎 Search Reports</Text>
+          <View style={styles.actionTitleRow}>
+            <AppIcon name="magnify" size={16} color="#153742" />
+            <Text style={styles.actionTitle}>Search Reports</Text>
+          </View>
           <Text style={styles.actionMeta}>Filter by campus</Text>
         </Pressable>
         <Pressable style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]} onPress={() => navigation.navigate('Saved')}>
-          <Text style={styles.actionTitle}>⭐ Saved Items</Text>
+          <View style={styles.actionTitleRow}>
+            <AppIcon name="bookmark-outline" size={16} color="#153742" />
+            <Text style={styles.actionTitle}>Saved Items</Text>
+          </View>
           <Text style={styles.actionMeta}>Your bookmarks</Text>
         </Pressable>
         <Pressable
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}
           onPress={() => (user ? navigation.navigate('Alerts') : requireLogin())}
         >
-          <Text style={styles.actionTitle}>🔔 Check Alerts</Text>
+          <View style={styles.actionTitleRow}>
+            <AppIcon name="bell-outline" size={16} color="#153742" />
+            <Text style={styles.actionTitle}>Check Alerts</Text>
+          </View>
           <Text style={styles.actionMeta}>Stay updated</Text>
         </Pressable>
       </View>
@@ -163,7 +176,7 @@ const HomeScreen = ({ navigation }) => {
         refreshControl={<RefreshControl refreshing={loading} onRefresh={init} />}
         ListEmptyComponent={(
           <EmptyState
-            icon="🧺"
+            iconName="basket-outline"
             title="No Reports Yet"
             message="Start by posting a lost or found item."
             actionLabel="Create First Report"
@@ -206,6 +219,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   actionPressed: { opacity: 0.75 },
+  actionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   actionTitle: { color: '#153742', fontWeight: '800', fontSize: 13 },
   actionMeta: { color: '#638088', marginTop: 3, fontSize: 12 },
   section: { marginTop: 14 },

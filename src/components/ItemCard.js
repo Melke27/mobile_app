@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import AppIcon from './AppIcon';
 import { generateItemImageUrl, resolveItemImageUrl } from '../utils/imageFallback';
 
 const ItemCard = ({ item, onPress }) => {
   const statusStyle =
     item.status === 'lost' ? styles.lost : item.status === 'recovered' ? styles.recovered : styles.found;
-  const statusIcon = item.status === 'lost' ? '🧭' : item.status === 'recovered' ? '✅' : '📦';
+  const statusIcon = item.status === 'lost' ? 'compass-outline' : item.status === 'recovered' ? 'check-circle-outline' : 'package-variant-closed';
   const [failedPrimaryImage, setFailedPrimaryImage] = useState(false);
   const imageSource = useMemo(() => {
     const sourceUrl = failedPrimaryImage ? generateItemImageUrl(item) : resolveItemImageUrl(item);
@@ -30,16 +31,22 @@ const ItemCard = ({ item, onPress }) => {
         <Text style={styles.title} numberOfLines={1}>
           {item.title}
         </Text>
-        <Text style={[styles.badge, statusStyle]}>{statusIcon} {item.status}</Text>
+        <Text style={[styles.badge, statusStyle]}>
+          <AppIcon name={statusIcon} size={12} color={statusStyle.color} /> {item.status}
+        </Text>
       </View>
       <Text style={styles.description} numberOfLines={2}>
         {item.description}
       </Text>
-      <Text style={styles.meta}>🏷️ {item.category} | 🏫 {item.campus}</Text>
-      <Text style={styles.meta}>📍 {item.locationText || 'No location text'}</Text>
+      <Text style={styles.meta}>
+        <AppIcon name="tag-outline" size={13} color="#777" /> {item.category} | <AppIcon name="school-outline" size={13} color="#777" /> {item.campus}
+      </Text>
+      <Text style={styles.meta}>
+        <AppIcon name="map-marker-outline" size={13} color="#777" /> {item.locationText || 'No location text'}
+      </Text>
       <View style={styles.footerRow}>
         <Text style={styles.dateMeta}>
-          {item.createdAt ? `🕒 ${new Date(item.createdAt).toLocaleDateString()}` : '🕒 Recently posted'}
+          <AppIcon name="clock-time-four-outline" size={13} color="#5f7a82" /> {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Recently posted'}
         </Text>
         <View style={styles.ctaPill}>
           <Text style={styles.ctaText}>View Details</Text>

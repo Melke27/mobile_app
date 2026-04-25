@@ -11,6 +11,7 @@ import {
 import FilterBar from '../components/FilterBar';
 import EmptyState from '../components/EmptyState';
 import ItemCard from '../components/ItemCard';
+import AppIcon from '../components/AppIcon';
 import { useItems } from '../context/ItemsContext';
 import { DEFAULT_CAMPUS } from '../config/env';
 
@@ -53,7 +54,10 @@ const SearchScreen = ({ navigation }) => {
     <SafeAreaView style={styles.root}>
       <View style={styles.content}>
         <Text style={styles.title}>Search Items</Text>
-        <Text style={styles.subtitle}>🔎 {results.length} results</Text>
+        <View style={styles.subtitleRow}>
+          <AppIcon name="magnify" size={16} color="#5d7a80" />
+          <Text style={styles.subtitle}>{results.length} result(s)</Text>
+        </View>
         <FilterBar filters={filters} onChange={setFilters} onSearch={onSearch} onReset={onReset} />
 
         <FlatList
@@ -68,7 +72,7 @@ const SearchScreen = ({ navigation }) => {
           windowSize={5}
           ListEmptyComponent={
             <EmptyState
-              icon="🧭"
+              iconName="compass-outline"
               title="No Results"
               message="Try changing filters or keywords."
               actionLabel="Reset Filters"
@@ -87,7 +91,8 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#f6fafb' },
   content: { flex: 1, padding: 14 },
   title: { fontSize: 20, fontWeight: '800', color: '#12343b' },
-  subtitle: { color: '#5d7a80', marginBottom: 10, marginTop: 2 },
+  subtitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, marginTop: 2 },
+  subtitle: { color: '#5d7a80' },
 });
 
 export default SearchScreen;

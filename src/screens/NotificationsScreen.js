@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import EmptyState from '../components/EmptyState';
+import AppIcon from '../components/AppIcon';
 import { notificationService } from '../services/notificationService';
 
 const NotificationCard = ({ item, onPress }) => {
@@ -79,7 +80,10 @@ const NotificationsScreen = ({ navigation }) => {
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>Alerts</Text>
-          <Text style={styles.subtitle}>🔔 {unreadCount} unread notifications</Text>
+          <View style={styles.subtitleRow}>
+            <AppIcon name="bell-ring-outline" size={16} color="#5f7a80" />
+            <Text style={styles.subtitle}>{unreadCount} unread notification(s)</Text>
+          </View>
         </View>
         <Pressable style={styles.markButton} onPress={markAllRead}>
           <Text style={styles.markButtonText}>Mark all read</Text>
@@ -98,7 +102,7 @@ const NotificationsScreen = ({ navigation }) => {
         refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
         ListEmptyComponent={
           <EmptyState
-            icon="📭"
+            iconName="email-outline"
             title="No Alerts Yet"
             message="Match and chat notifications will appear here."
           />
@@ -119,7 +123,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   title: { fontSize: 22, fontWeight: '800', color: '#12343b' },
-  subtitle: { color: '#5f7a80', marginTop: 2 },
+  subtitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
+  subtitle: { color: '#5f7a80' },
   markButton: {
     backgroundColor: '#0b7285',
     paddingHorizontal: 10,

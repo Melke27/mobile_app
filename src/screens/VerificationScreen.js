@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import AppIcon from '../components/AppIcon';
 import { qrService } from '../services/qrService';
 
 const VerificationScreen = () => {
@@ -59,7 +60,7 @@ const VerificationScreen = () => {
             />
 
             <Pressable style={styles.button} onPress={generate}>
-              <Text style={styles.buttonText}>🧾 Generate Token</Text>
+              <Text style={styles.buttonText}>Generate Token</Text>
             </Pressable>
 
             <TextInput
@@ -72,16 +73,16 @@ const VerificationScreen = () => {
             />
 
             <Pressable style={[styles.button, styles.alt]} onPress={verify}>
-              <Text style={styles.buttonText}>✅ Verify Token</Text>
+              <Text style={styles.buttonText}>Verify Token</Text>
             </Pressable>
 
             {verificationError ? <Text style={styles.errorText}>{verificationError}</Text> : null}
 
             {verification && (
               <View style={styles.result}>
-                <Text style={styles.resultText}>✅ Valid Token</Text>
-                <Text style={styles.resultText}>📦 Item: {verification.itemId}</Text>
-                <Text style={styles.resultText}>👤 Owner: {verification.ownerId}</Text>
+                <Text style={styles.resultText}><AppIcon name="check-circle-outline" size={14} color="#1a5f2f" /> Valid Token</Text>
+                <Text style={styles.resultText}><AppIcon name="package-variant-closed" size={14} color="#1a5f2f" /> Item: {verification.itemId}</Text>
+                <Text style={styles.resultText}><AppIcon name="account-outline" size={14} color="#1a5f2f" /> Owner: {verification.ownerId}</Text>
               </View>
             )}
           </View>

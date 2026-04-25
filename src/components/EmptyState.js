@@ -1,10 +1,17 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import AppIcon from './AppIcon';
 
-const EmptyState = ({ title = 'No Data Yet', message, icon = '📭', actionLabel, onAction }) => {
+const EmptyState = ({ title = 'No Data Yet', message, icon, iconName = 'inbox-outline', actionLabel, onAction }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.icon}>{icon}</Text>
+      {icon ? (
+        <Text style={styles.iconEmoji}>{icon}</Text>
+      ) : (
+        <View style={styles.iconWrap}>
+          <AppIcon name={iconName} size={30} color="#2a5b66" />
+        </View>
+      )}
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.text}>{message}</Text>
       {actionLabel && onAction ? (
@@ -28,10 +35,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#fbfeff',
     marginTop: 10,
   },
-  icon: {
-    fontSize: 28,
+  iconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 8,
+    backgroundColor: '#edf7fa',
   },
+  iconEmoji: { fontSize: 28, marginBottom: 8 },
   title: {
     color: '#204a54',
     fontSize: 16,

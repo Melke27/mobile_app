@@ -2,6 +2,7 @@ import React from 'react';
 import { Alert, FlatList, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import EmptyState from '../components/EmptyState';
 import ItemCard from '../components/ItemCard';
+import AppIcon from '../components/AppIcon';
 import { useItems } from '../context/ItemsContext';
 
 const SavedItemsScreen = ({ navigation }) => {
@@ -29,7 +30,10 @@ const SavedItemsScreen = ({ navigation }) => {
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>Saved Reports</Text>
-          <Text style={styles.subtitle}>⭐ {savedItems.length} saved item(s)</Text>
+          <View style={styles.subtitleRow}>
+            <AppIcon name="bookmark-outline" size={16} color="#5f7a80" />
+            <Text style={styles.subtitle}>{savedItems.length} saved item(s)</Text>
+          </View>
         </View>
         <Pressable style={styles.clearButton} onPress={onClearAll}>
           <Text style={styles.clearText}>Clear All</Text>
@@ -46,7 +50,7 @@ const SavedItemsScreen = ({ navigation }) => {
         )}
         ListEmptyComponent={(
           <EmptyState
-            icon="⭐"
+            iconName="bookmark-multiple-outline"
             title="No Saved Items"
             message="Save reports from item details to quickly access them here."
             actionLabel="Browse Reports"
@@ -69,7 +73,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: { fontSize: 22, fontWeight: '800', color: '#12343b' },
-  subtitle: { color: '#5f7a80', marginTop: 2 },
+  subtitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
+  subtitle: { color: '#5f7a80' },
   clearButton: {
     borderWidth: 1,
     borderColor: '#d7a6a6',

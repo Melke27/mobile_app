@@ -1,7 +1,8 @@
 import React from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import AppIcon from '../components/AppIcon';
 import { useAuth } from '../context/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
@@ -20,14 +21,14 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TAB_META = {
-  Home: { icon: '🏠', label: 'Home Feed' },
-  Report: { icon: '📝', label: 'Report Item' },
-  Search: { icon: '🔎', label: 'Search' },
-  Saved: { icon: '⭐', label: 'Saved' },
-  Alerts: { icon: '🔔', label: 'Alerts' },
-  Verify: { icon: '✅', label: 'Verify' },
-  Account: { icon: '👤', label: 'Account' },
-  Admin: { icon: '🛡️', label: 'Admin' },
+  Home: { icon: 'home-outline', label: 'Home Feed' },
+  Report: { icon: 'file-document-edit-outline', label: 'Report Item' },
+  Search: { icon: 'magnify', label: 'Search' },
+  Saved: { icon: 'bookmark-outline', label: 'Saved' },
+  Alerts: { icon: 'bell-outline', label: 'Alerts' },
+  Verify: { icon: 'shield-check-outline', label: 'Verify' },
+  Account: { icon: 'account-circle-outline', label: 'Account' },
+  Admin: { icon: 'shield-account-outline', label: 'Admin' },
 };
 
 const MainTabs = ({ isAdmin }) => {
@@ -51,7 +52,11 @@ const MainTabs = ({ isAdmin }) => {
           backgroundColor: '#f9feff',
         },
         tabBarIcon: ({ color, focused }) => (
-          <Text style={{ fontSize: focused ? 18 : 16, color }}>{TAB_META[route.name]?.icon || '⬤'}</Text>
+          <AppIcon
+            name={TAB_META[route.name]?.icon || 'circle-outline'}
+            color={color}
+            size={focused ? 22 : 20}
+          />
         ),
       })}
     >

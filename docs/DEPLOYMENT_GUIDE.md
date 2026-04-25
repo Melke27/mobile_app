@@ -62,7 +62,7 @@ Open `src/config/env.js` and set:
 
 - `HOSTED_API_BASE_URL` to your deployed backend URL.
 - `DEV_BACKEND_MODE` as needed:
-  - `hosted` to always use hosted backend
+  - `hosted` to always use hosted backend (recommended for real phones; default in this repo)
   - `auto` to try local dev backends first, then hosted fallback
 
 Example:
@@ -123,6 +123,12 @@ If you want a store-ready APK, use:
 
 ```bash
 npm run apk:release
+```
+
+Install release APK to phone (standalone, no Metro/USB reverse required after install):
+
+```bash
+npm run install:phone:release
 ```
 
 ## 6. Run Everything Locally in One Command

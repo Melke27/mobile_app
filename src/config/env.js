@@ -5,7 +5,8 @@ const HOSTED_API_BASE_URL = 'https://mobile-app-ff7d.onrender.com/api';
 
 // Modes: auto | usb_reverse | emulator | phone_wifi | hosted
 // auto tries local targets first, then hosted fallback.
-const DEV_BACKEND_MODE = 'auto';
+// Keep hosted by default so physical phones work without USB port-reverse.
+const DEV_BACKEND_MODE = 'hosted';
 
 const MODE_TARGETS = {
   auto: [

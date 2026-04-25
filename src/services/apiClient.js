@@ -9,7 +9,8 @@ import { storageService } from './storageService';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  // Render free services can take extra time on first request after idle.
+  timeout: 30000,
 });
 
 apiClient.interceptors.request.use(async (config) => {

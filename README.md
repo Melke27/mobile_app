@@ -198,9 +198,17 @@ adb reverse tcp:8081 tcp:8081
 
 Note for Android emulator: default API URL is `http://10.0.2.2:5000/api`.
 Dev backend mode is controlled in `src/config/env.js`:
+- set `DEV_BACKEND_MODE = 'hosted'` for real-device usage without USB/local backend dependency (default in this repo)
 - set `DEV_BACKEND_MODE = 'auto'` for smart fallback (USB reverse -> emulator -> Wi-Fi phone -> hosted)
 - set `DEV_BACKEND_MODE = 'phone_wifi'` and update `LOCAL_PHONE_API_BASE_URL` for same-Wi-Fi phone testing
-- set `DEV_BACKEND_MODE = 'hosted'` to force hosted API in development
+- set `DEV_BACKEND_MODE = 'usb_reverse'` if you explicitly want local backend via USB
+
+Install standalone release APK (recommended for phone testing without USB/Metro):
+
+```bash
+npm run apk:release
+npm run install:phone:release
+```
 
 Admin note: the first registered account is automatically assigned `admin` role for easier project setup/demo.
 

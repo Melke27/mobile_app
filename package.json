@@ -13,6 +13,7 @@
     "apk:debug": "cd android && ./gradlew assembleDebug",
     "apk:release": "cd android && ./gradlew assembleRelease",
     "install:phone": "adb reverse tcp:8081 tcp:8081 && adb reverse tcp:5000 tcp:5000 && adb install -r android/app/build/outputs/apk/debug/app-debug.apk",
+    "install:phone:release": "adb install -r android/app/build/outputs/apk/release/app-release.apk",
     "server:dev": "npm --prefix server run dev",
     "server:start": "npm --prefix server run start",
     "dev:all": "concurrently -k \"npm:server:dev\" \"npm:start\"",

@@ -20,6 +20,7 @@ import { imageService } from '../services/imageService';
 import { permissionsService } from '../services/permissionsService';
 import { storageService } from '../services/storageService';
 import { isValidEmail } from '../utils/validators';
+import AppIcon from '../components/AppIcon';
 
 const getInitials = (name = '') => {
   const words = name.trim().split(/\s+/).filter(Boolean);
@@ -43,7 +44,7 @@ const toProfileImageValue = (asset) => {
   return asset.uri || '';
 };
 
-const CompactButton = ({ label, onPress, loading, disabled, tone = 'neutral', style }) => {
+const CompactButton = ({ label, iconName, onPress, loading, disabled, tone = 'neutral', style }) => {
   const toneStyle =
     tone === 'danger'
       ? styles.compactButtonDanger
@@ -56,6 +57,7 @@ const CompactButton = ({ label, onPress, loading, disabled, tone = 'neutral', st
       : tone === 'primary'
         ? styles.compactButtonPrimaryText
         : styles.compactButtonNeutralText;
+  const iconColor = tone === 'primary' ? '#ffffff' : tone === 'danger' ? '#9f3333' : '#21464f';
 
   return (
     <Pressable
@@ -70,9 +72,12 @@ const CompactButton = ({ label, onPress, loading, disabled, tone = 'neutral', st
       disabled={disabled || loading}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={tone === 'primary' ? '#ffffff' : '#174651'} />
+        <ActivityIndicator size="small" color={iconColor} />
       ) : (
-        <Text style={[styles.compactButtonText, toneTextStyle]}>{label}</Text>
+        <View style={styles.compactInner}>
+          {iconName ? <AppIcon name={iconName} size={14} color={iconColor} /> : null}
+          <Text style={[styles.compactButtonText, toneTextStyle]}>{label}</Text>
+        </View>
       )}
     </Pressable>
   );
@@ -271,11 +276,18 @@ const AccountScreen = () => {
                 <Text style={styles.avatarInitials}>{getInitials(profileForm.name)}</Text>
               )}
             </View>
-            <Text style={styles.nameText}>{profileForm.name || 'Campus User'}</Text>
-            <Text style={styles.metaText}>Member since {memberSince}</Text>
+            <View style={styles.nameRow}>
+              <AppIcon name="account-circle-outline" size={20} color="#143b44" />
+              <Text style={styles.nameText}>{profileForm.name || 'Campus User'}</Text>
+            </View>
+            <View style={styles.metaRow}>
+              <AppIcon name="calendar-month-outline" size={14} color="#5f7a80" />
+              <Text style={styles.metaText}>Member since {memberSince}</Text>
+            </View>
             <View style={styles.imageButtonsRow}>
               <CompactButton
                 label="Camera"
+                iconName="camera-outline"
                 tone="neutral"
                 loading={actionLoading === 'cameraImage'}
                 onPress={() => chooseProfileImage('camera')}
@@ -283,6 +295,7 @@ const AccountScreen = () => {
               />
               <CompactButton
                 label="Gallery"
+                iconName="image-outline"
                 tone="neutral"
                 loading={actionLoading === 'galleryImage'}
                 onPress={() => chooseProfileImage('gallery')}
@@ -290,6 +303,7 @@ const AccountScreen = () => {
               />
               <CompactButton
                 label="Remove"
+                iconName="image-remove-outline"
                 tone="danger"
                 loading={false}
                 onPress={() => updateProfileField({ avatarUrl: '' })}
@@ -300,7 +314,10 @@ const AccountScreen = () => {
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Profile Settings</Text>
+            <View style={styles.cardTitleRow}>
+              <AppIcon name="account-edit-outline" size={16} color="#123841" />
+              <Text style={styles.cardTitle}>Profile Settings</Text>
+            </View>
             <TextInput
               style={styles.input}
               placeholder="Full name"
@@ -327,6 +344,7 @@ const AccountScreen = () => {
             />
             <CompactButton
               label="Save Profile"
+              iconName="content-save-outline"
               tone="primary"
               loading={actionLoading === 'saveProfile'}
               onPress={onSaveProfile}
@@ -335,7 +353,10 @@ const AccountScreen = () => {
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Account Security</Text>
+            <View style={styles.cardTitleRow}>
+              <AppIcon name="shield-lock-outline" size={16} color="#123841" />
+              <Text style={styles.cardTitle}>Account Security</Text>
+            </View>
             <TextInput
               style={styles.input}
               placeholder="Current password"
@@ -362,6 +383,7 @@ const AccountScreen = () => {
             />
             <CompactButton
               label="Change Password"
+              iconName="lock-reset"
               tone="primary"
               loading={actionLoading === 'changePassword'}
               onPress={onChangePassword}
@@ -370,10 +392,14 @@ const AccountScreen = () => {
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Account Actions</Text>
+            <View style={styles.cardTitleRow}>
+              <AppIcon name="cog-outline" size={16} color="#123841" />
+              <Text style={styles.cardTitle}>Account Actions</Text>
+            </View>
             <View style={styles.actionsStack}>
               <CompactButton
                 label="Clear Saved Items"
+                iconName="bookmark-remove-outline"
                 tone="neutral"
                 loading={actionLoading === 'clearSaved'}
                 onPress={onClearSavedItems}
@@ -381,6 +407,7 @@ const AccountScreen = () => {
               />
               <CompactButton
                 label="Clear Draft + Cache"
+                iconName="broom"
                 tone="neutral"
                 loading={actionLoading === 'clearCache'}
                 onPress={onClearDraftAndCache}
@@ -388,6 +415,7 @@ const AccountScreen = () => {
               />
               <CompactButton
                 label="Sign Out"
+                iconName="logout"
                 tone="danger"
                 loading={false}
                 onPress={onLogout}
@@ -425,8 +453,10 @@ const styles = StyleSheet.create({
   },
   avatarImage: { width: '100%', height: '100%' },
   avatarInitials: { fontSize: 34, fontWeight: '800', color: '#184650' },
-  nameText: { marginTop: 10, fontSize: 20, fontWeight: '800', color: '#143b44' },
-  metaText: { marginTop: 2, color: '#5f7a80' },
+  nameRow: { marginTop: 10, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  nameText: { fontSize: 20, fontWeight: '800', color: '#143b44' },
+  metaRow: { marginTop: 4, flexDirection: 'row', alignItems: 'center', gap: 5 },
+  metaText: { color: '#5f7a80' },
   imageButtonsRow: { marginTop: 12, flexDirection: 'row', gap: 8 },
   inlineCompact: {
     flex: 1,
@@ -445,6 +475,7 @@ const styles = StyleSheet.create({
   compactButtonNeutral: { borderColor: '#c0d6dc', backgroundColor: '#f7fcfd' },
   compactButtonPrimary: { borderColor: '#0b7285', backgroundColor: '#0b7285' },
   compactButtonDanger: { borderColor: '#e3b1b1', backgroundColor: '#fff6f6' },
+  compactInner: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   compactButtonText: { fontWeight: '700', fontSize: 13, lineHeight: 16 },
   compactButtonNeutralText: { color: '#21464f' },
   compactButtonPrimaryText: { color: '#ffffff' },
@@ -456,7 +487,8 @@ const styles = StyleSheet.create({
     borderColor: '#d9e7ea',
     padding: 14,
   },
-  cardTitle: { fontSize: 17, fontWeight: '800', color: '#123841', marginBottom: 10 },
+  cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
+  cardTitle: { fontSize: 17, fontWeight: '800', color: '#123841' },
   input: {
     borderWidth: 1,
     borderColor: '#d2dde1',

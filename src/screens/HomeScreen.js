@@ -111,17 +111,23 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Campus Overview</Text>
+        <View style={styles.sectionTitleRow}>
+          <AppIcon name="chart-box-outline" size={18} color="#173944" />
+          <Text style={styles.sectionTitle}>Campus Overview</Text>
+        </View>
         <View style={styles.summaryRow}>
           <View style={styles.summaryCard}>
+            <AppIcon name="help-circle-outline" size={18} color="#8a1f1f" />
             <Text style={styles.summaryValue}>{summary.lost}</Text>
             <Text style={styles.summaryLabel}>Lost</Text>
           </View>
           <View style={styles.summaryCard}>
+            <AppIcon name="hand-coin-outline" size={18} color="#156e22" />
             <Text style={styles.summaryValue}>{summary.found}</Text>
             <Text style={styles.summaryLabel}>Found</Text>
           </View>
           <View style={styles.summaryCard}>
+            <AppIcon name="check-circle-outline" size={18} color="#2b3c78" />
             <Text style={styles.summaryValue}>{summary.recovered}</Text>
             <Text style={styles.summaryLabel}>Recovered</Text>
           </View>
@@ -129,7 +135,10 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Adama University Map</Text>
+        <View style={styles.sectionTitleRow}>
+          <AppIcon name="map-search-outline" size={18} color="#173944" />
+          <Text style={styles.sectionTitle}>Adama University Map</Text>
+        </View>
         <View style={styles.mapCard}>
           <Image source={adamaCampusGallery[1]} style={styles.mapPreviewImage} />
           <View style={styles.mapOverlay}>
@@ -138,12 +147,18 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
         <Pressable style={({ pressed }) => [styles.mapButton, pressed && styles.mapButtonPressed]} onPress={openAdamaMap}>
-          <Text style={styles.mapButtonText}>Open in Google Maps</Text>
+          <View style={styles.mapButtonInner}>
+            <AppIcon name="google-maps" size={14} color="#ffffff" />
+            <Text style={styles.mapButtonText}>Open in Google Maps</Text>
+          </View>
         </Pressable>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Adama Campus Gallery</Text>
+        <View style={styles.sectionTitleRow}>
+          <AppIcon name="image-multiple-outline" size={18} color="#173944" />
+          <Text style={styles.sectionTitle}>Adama Campus Gallery</Text>
+        </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.galleryRow}>
           {adamaCampusGallery.map((image, index) => (
             <View style={styles.galleryCard} key={`gallery-${index}`}>
@@ -154,7 +169,10 @@ const HomeScreen = ({ navigation }) => {
         </ScrollView>
       </View>
 
-      <Text style={styles.feedTitle}>Latest Lost & Found Reports</Text>
+      <View style={styles.feedTitleRow}>
+        <AppIcon name="timeline-text-outline" size={18} color="#13363d" />
+        <Text style={styles.feedTitle}>Latest Lost & Found Reports</Text>
+      </View>
       <Text style={styles.feedSubtitle}>Live feed from the campus community</Text>
     </View>
   );
@@ -223,7 +241,8 @@ const styles = StyleSheet.create({
   actionTitle: { color: '#153742', fontWeight: '800', fontSize: 13 },
   actionMeta: { color: '#638088', marginTop: 3, fontSize: 12 },
   section: { marginTop: 14 },
-  sectionTitle: { fontSize: 18, fontWeight: '800', color: '#173944', marginBottom: 8 },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
+  sectionTitle: { fontSize: 18, fontWeight: '800', color: '#173944' },
   summaryRow: { flexDirection: 'row', gap: 8 },
   summaryCard: {
     flex: 1,
@@ -233,6 +252,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     alignItems: 'center',
+    gap: 2,
   },
   summaryValue: { fontSize: 18, fontWeight: '800', color: '#164a55' },
   summaryLabel: { color: '#5f7a80', marginTop: 2, fontSize: 12 },
@@ -275,6 +295,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mapButtonPressed: { opacity: 0.8 },
+  mapButtonInner: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   mapButtonText: { color: '#fff', fontWeight: '800' },
   galleryRow: { gap: 10 },
   galleryCard: {
@@ -287,8 +308,9 @@ const styles = StyleSheet.create({
   },
   galleryImage: { width: '100%', height: 128 },
   galleryText: { color: '#32525a', fontWeight: '700', padding: 10 },
-  feedTitle: { marginTop: 14, fontSize: 20, fontWeight: '900', color: '#13363d' },
-  feedSubtitle: { color: '#5f7a80', marginTop: 2, marginBottom: 2 },
+  feedTitleRow: { marginTop: 14, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  feedTitle: { fontSize: 20, fontWeight: '900', color: '#13363d' },
+  feedSubtitle: { color: '#5f7a80', marginTop: 2, marginBottom: 2, marginLeft: 24 },
 });
 
 export default HomeScreen;

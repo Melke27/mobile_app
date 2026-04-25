@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   Pressable,
@@ -10,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import AppIcon from '../components/AppIcon';
 import { useAuth } from '../context/AuthContext';
 import { chatService } from '../services/chatService';
 
@@ -95,7 +97,10 @@ const ChatScreen = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.root}>
-      <Text style={styles.header}>Chat about: {item.title || 'Item'}</Text>
+      <View style={styles.headerWrap}>
+        <AppIcon name="chat-processing-outline" size={18} color="#1e434a" />
+        <Text style={styles.header}>Chat about: {item.title || 'Item'}</Text>
+      </View>
 
       <FlatList
         data={messages}
@@ -114,6 +119,12 @@ const ChatScreen = ({ route }) => {
             </View>
           );
         }}
+        ListEmptyComponent={(
+          <View style={styles.emptyWrap}>
+            <AppIcon name="message-text-outline" size={24} color="#6a7f86" />
+            <Text style={styles.emptyText}>No messages yet. Start the conversation.</Text>
+          </View>
+        )}
       />
 
       <View style={styles.composer}>
@@ -126,7 +137,14 @@ const ChatScreen = ({ route }) => {
           editable={!sending}
         />
         <Pressable style={[styles.send, sending && styles.sendDisabled]} onPress={send} disabled={sending}>
-          <Text style={styles.sendText}>{sending ? '...' : 'Send'}</Text>
+          {sending ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <View style={styles.sendInner}>
+              <AppIcon name="send-outline" size={14} color="#ffffff" />
+              <Text style={styles.sendText}>Send</Text>
+            </View>
+          )}
         </Pressable>
       </View>
     </SafeAreaView>
@@ -135,7 +153,8 @@ const ChatScreen = ({ route }) => {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#f6fafb' },
-  header: { padding: 12, fontWeight: '700', color: '#1e434a' },
+  headerWrap: { padding: 12, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  header: { fontWeight: '700', color: '#1e434a' },
   bubble: {
     maxWidth: '82%',
     borderRadius: 10,
@@ -147,6 +166,8 @@ const styles = StyleSheet.create({
   theirs: { backgroundColor: '#e2eef1', alignSelf: 'flex-start' },
   message: { color: '#172a2f' },
   myMessage: { color: '#fff' },
+  emptyWrap: { alignItems: 'center', paddingTop: 28 },
+  emptyText: { color: '#6a7f86', marginTop: 6, fontWeight: '600' },
   composer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -168,6 +189,7 @@ const styles = StyleSheet.create({
   },
   send: { backgroundColor: '#0b7285', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 10 },
   sendDisabled: { backgroundColor: '#87aeb5' },
+  sendInner: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sendText: { color: '#fff', fontWeight: '700' },
 });
 

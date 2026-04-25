@@ -19,11 +19,17 @@ const NotificationCard = ({ item, onPress }) => {
   return (
     <Pressable style={[styles.card, unread && styles.unreadCard]} onPress={onPress}>
       <View style={styles.cardHeader}>
-        <Text style={styles.cardTitle}>{item.title}</Text>
+        <View style={styles.cardTitleRow}>
+          <AppIcon name={unread ? 'bell-alert-outline' : 'bell-check-outline'} size={14} color={unread ? '#0b7285' : '#5f7a80'} />
+          <Text style={styles.cardTitle}>{item.title}</Text>
+        </View>
         {unread && <Text style={styles.unreadBadge}>NEW</Text>}
       </View>
       <Text style={styles.cardBody}>{item.body}</Text>
-      <Text style={styles.meta}>{new Date(item.createdAt).toLocaleString()}</Text>
+      <View style={styles.metaRow}>
+        <AppIcon name="clock-time-four-outline" size={12} color="#789097" />
+        <Text style={styles.meta}>{new Date(item.createdAt).toLocaleString()}</Text>
+      </View>
     </Pressable>
   );
 };
@@ -79,14 +85,20 @@ const NotificationsScreen = ({ navigation }) => {
     <SafeAreaView style={styles.root}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Alerts</Text>
+          <View style={styles.titleRow}>
+            <AppIcon name="bell-badge-outline" size={20} color="#12343b" />
+            <Text style={styles.title}>Alerts</Text>
+          </View>
           <View style={styles.subtitleRow}>
             <AppIcon name="bell-ring-outline" size={16} color="#5f7a80" />
             <Text style={styles.subtitle}>{unreadCount} unread notification(s)</Text>
           </View>
         </View>
         <Pressable style={styles.markButton} onPress={markAllRead}>
-          <Text style={styles.markButtonText}>Mark all read</Text>
+          <View style={styles.markButtonInner}>
+            <AppIcon name="email-check-outline" size={13} color="#ffffff" />
+            <Text style={styles.markButtonText}>Mark all read</Text>
+          </View>
         </Pressable>
       </View>
 
@@ -122,6 +134,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   title: { fontSize: 22, fontWeight: '800', color: '#12343b' },
   subtitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
   subtitle: { color: '#5f7a80' },
@@ -131,6 +144,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
   },
+  markButtonInner: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   markButtonText: { color: '#fff', fontWeight: '700', fontSize: 12 },
   card: {
     backgroundColor: '#fff',
@@ -145,6 +159,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1fbfd',
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1, paddingRight: 8 },
   cardTitle: { fontWeight: '700', color: '#1d3438', flexShrink: 1, paddingRight: 8 },
   unreadBadge: {
     fontSize: 10,
@@ -156,7 +171,8 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   cardBody: { color: '#4f666b', marginTop: 6 },
-  meta: { color: '#789097', marginTop: 8, fontSize: 12 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 },
+  meta: { color: '#789097', fontSize: 12 },
 });
 
 export default NotificationsScreen;

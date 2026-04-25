@@ -323,7 +323,10 @@ const ReportItemScreen = () => {
     <SafeAreaView style={styles.root}>
       <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <Text style={styles.title}>Create High-Quality Report</Text>
+          <View style={styles.titleRow}>
+            <AppIcon name="file-document-edit-outline" size={20} color="#12343b" />
+            <Text style={styles.title}>Create High-Quality Report</Text>
+          </View>
           <Text style={styles.subtitle}>Complete more details to improve match accuracy and faster recovery.</Text>
 
           <View style={styles.qualityCard}>
@@ -499,12 +502,25 @@ const ReportItemScreen = () => {
           </View>
 
           <View style={styles.summaryCard}>
-            <Text style={styles.summaryTitle}>Report Summary</Text>
-            <Text style={styles.summaryLine}>Type: {form.status.toUpperCase()}</Text>
-            <Text style={styles.summaryLine}>Category: {form.category || 'Not selected'}</Text>
-            <Text style={styles.summaryLine}>Campus: {form.campus || 'Not selected'}</Text>
-            <Text style={styles.summaryLine}>Photo: {form.imageUrl ? 'Attached' : 'Not attached'}</Text>
-            <Text style={styles.summaryLine}>Location: {form.location || form.locationText.trim() ? 'Added' : 'Not added'}</Text>
+            <View style={styles.summaryTitleRow}>
+              <AppIcon name="text-box-check-outline" size={15} color="#204a54" />
+              <Text style={styles.summaryTitle}>Report Summary</Text>
+            </View>
+            <Text style={styles.summaryLine}>
+              <AppIcon name="clipboard-list-outline" size={13} color="#4d676d" /> Type: {form.status.toUpperCase()}
+            </Text>
+            <Text style={styles.summaryLine}>
+              <AppIcon name="tag-outline" size={13} color="#4d676d" /> Category: {form.category || 'Not selected'}
+            </Text>
+            <Text style={styles.summaryLine}>
+              <AppIcon name="school-outline" size={13} color="#4d676d" /> Campus: {form.campus || 'Not selected'}
+            </Text>
+            <Text style={styles.summaryLine}>
+              <AppIcon name="image-outline" size={13} color="#4d676d" /> Photo: {form.imageUrl ? 'Attached' : 'Not attached'}
+            </Text>
+            <Text style={styles.summaryLine}>
+              <AppIcon name="map-marker-outline" size={13} color="#4d676d" /> Location: {form.location || form.locationText.trim() ? 'Added' : 'Not added'}
+            </Text>
           </View>
 
           {Boolean(form.imageUrl) && (
@@ -527,7 +543,10 @@ const ReportItemScreen = () => {
             {submitting ? (
               <ActivityIndicator size="small" color="#ffffff" />
             ) : (
-              <Text style={styles.submitText}>Submit Report</Text>
+              <View style={styles.submitInner}>
+                <AppIcon name="check-circle-outline" size={15} color="#ffffff" />
+                <Text style={styles.submitText}>Submit Report</Text>
+              </View>
             )}
           </Pressable>
         </ScrollView>
@@ -539,6 +558,7 @@ const ReportItemScreen = () => {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#f6fafb' },
   content: { padding: 14, paddingBottom: 24 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   title: { fontSize: 22, fontWeight: '800', color: '#12343b', marginBottom: 4 },
   subtitle: { color: '#55727a', marginBottom: 12 },
   qualityCard: {
@@ -637,7 +657,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
   },
-  summaryTitle: { color: '#204a54', fontWeight: '800', marginBottom: 6 },
+  summaryTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
+  summaryTitle: { color: '#204a54', fontWeight: '800' },
   summaryLine: { color: '#4d676d', fontSize: 12, marginBottom: 2 },
   previewWrap: {
     borderWidth: 1,
@@ -664,6 +685,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   submitButtonDisabled: { backgroundColor: '#8eb3a1' },
+  submitInner: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   submitText: { color: '#fff', fontWeight: '700' },
 });
 

@@ -51,7 +51,10 @@ const ItemCard = ({ item, onPress }) => {
           <AppIcon name="clock-time-four-outline" size={13} color="#5f7a82" /> {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Recently posted'}
         </Text>
         <View style={styles.ctaPill}>
-          <Text style={styles.ctaText}>View Details</Text>
+          <View style={styles.ctaInner}>
+            <AppIcon name="arrow-right-circle-outline" size={12} color="#1b5e6b" />
+            <Text style={styles.ctaText}>View Details</Text>
+          </View>
         </View>
       </View>
     </Pressable>
@@ -109,6 +112,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     backgroundColor: '#f2fafc',
   },
+  ctaInner: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   ctaText: { color: '#1b5e6b', fontSize: 11, fontWeight: '700' },
 });
 

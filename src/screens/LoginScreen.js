@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -11,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import AppIcon from '../components/AppIcon';
 
 const LoginScreen = ({ navigation }) => {
   const { login } = useAuth();
@@ -44,15 +46,21 @@ const LoginScreen = ({ navigation }) => {
                 style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
                 onPress={() => navigation.goBack()}
               >
-                <Text style={styles.backIcon}>{'<'}</Text>
+                <AppIcon name="chevron-left" size={14} color="#174651" />
                 <Text style={styles.backText}>Back</Text>
               </Pressable>
             ) : null}
 
-            <Text style={styles.title}>Campus Lost & Found</Text>
+            <View style={styles.titleRow}>
+              <AppIcon name="shield-search-outline" size={22} color="#12343b" />
+              <Text style={styles.title}>Campus Lost & Found</Text>
+            </View>
             <Text style={styles.subtitle}>Sign in to report or recover items</Text>
 
-            <Text style={styles.fieldLabel}>Email</Text>
+            <View style={styles.fieldLabelRow}>
+              <AppIcon name="email-outline" size={14} color="#355158" />
+              <Text style={styles.fieldLabel}>Email</Text>
+            </View>
             <TextInput
               style={styles.input}
               keyboardType="email-address"
@@ -68,7 +76,10 @@ const LoginScreen = ({ navigation }) => {
               selectionColor="#0b7285"
               cursorColor="#0b7285"
             />
-            <Text style={styles.fieldLabel}>Password</Text>
+            <View style={styles.fieldLabelRow}>
+              <AppIcon name="lock-outline" size={14} color="#355158" />
+              <Text style={styles.fieldLabel}>Password</Text>
+            </View>
             <TextInput
               style={styles.input}
               placeholder="Enter your password"
@@ -84,11 +95,21 @@ const LoginScreen = ({ navigation }) => {
             />
 
             <Pressable style={[styles.button, submitting && styles.buttonDisabled]} onPress={onSubmit} disabled={submitting}>
-              <Text style={styles.buttonText}>{submitting ? 'Signing in...' : 'Login'}</Text>
+              {submitting ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <View style={styles.buttonInner}>
+                  <AppIcon name="login" size={14} color="#ffffff" />
+                  <Text style={styles.buttonText}>Login</Text>
+                </View>
+              )}
             </Pressable>
 
             <Pressable onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.link}>Create new account</Text>
+              <View style={styles.linkRow}>
+                <AppIcon name="account-plus-outline" size={14} color="#0b7285" />
+                <Text style={styles.link}>Create new account</Text>
+              </View>
             </Pressable>
           </View>
         </ScrollView>
@@ -108,6 +129,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e2edf0',
   },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontSize: 24, fontWeight: '800', color: '#12343b' },
   subtitle: { marginTop: 4, color: '#5d7278', marginBottom: 16 },
   backButton: {
@@ -123,14 +145,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fbfc',
   },
   backButtonPressed: { opacity: 0.7 },
-  backIcon: { color: '#174651', fontWeight: '800', marginRight: 6, fontSize: 13 },
+  fieldLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2, marginTop: 2 },
   backText: { color: '#174651', fontWeight: '700', fontSize: 13 },
   fieldLabel: {
     color: '#355158',
     fontSize: 13,
     fontWeight: '700',
-    marginBottom: 6,
-    marginTop: 2,
+    marginBottom: 0,
+    marginTop: 0,
   },
   input: {
     borderWidth: 1,
@@ -151,12 +173,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 4,
+    minHeight: 44,
   },
   buttonDisabled: {
     backgroundColor: '#86a9b2',
   },
+  buttonInner: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   buttonText: { color: '#fff', fontWeight: '700' },
-  link: { marginTop: 12, color: '#0b7285', textAlign: 'center', fontWeight: '600' },
+  linkRow: { marginTop: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6 },
+  link: { color: '#0b7285', textAlign: 'center', fontWeight: '600' },
 });
 
 export default LoginScreen;

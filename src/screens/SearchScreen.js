@@ -53,7 +53,10 @@ const SearchScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.root}>
       <View style={styles.content}>
-        <Text style={styles.title}>Search Items</Text>
+        <View style={styles.titleRow}>
+          <AppIcon name="database-search-outline" size={20} color="#12343b" />
+          <Text style={styles.title}>Search Items</Text>
+        </View>
         <View style={styles.subtitleRow}>
           <AppIcon name="magnify" size={16} color="#5d7a80" />
           <Text style={styles.subtitle}>{results.length} result(s)</Text>
@@ -90,6 +93,7 @@ const SearchScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#f6fafb' },
   content: { flex: 1, padding: 14 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   title: { fontSize: 20, fontWeight: '800', color: '#12343b' },
   subtitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, marginTop: 2 },
   subtitle: { color: '#5d7a80' },

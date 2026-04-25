@@ -29,14 +29,20 @@ const SavedItemsScreen = ({ navigation }) => {
     <SafeAreaView style={styles.root}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Saved Reports</Text>
+          <View style={styles.titleRow}>
+            <AppIcon name="bookmark-multiple-outline" size={20} color="#12343b" />
+            <Text style={styles.title}>Saved Reports</Text>
+          </View>
           <View style={styles.subtitleRow}>
             <AppIcon name="bookmark-outline" size={16} color="#5f7a80" />
             <Text style={styles.subtitle}>{savedItems.length} saved item(s)</Text>
           </View>
         </View>
         <Pressable style={styles.clearButton} onPress={onClearAll}>
-          <Text style={styles.clearText}>Clear All</Text>
+          <View style={styles.buttonInner}>
+            <AppIcon name="delete-sweep-outline" size={14} color="#9f3333" />
+            <Text style={styles.clearText}>Clear All</Text>
+          </View>
         </Pressable>
       </View>
 
@@ -72,6 +78,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   title: { fontSize: 22, fontWeight: '800', color: '#12343b' },
   subtitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
   subtitle: { color: '#5f7a80' },
@@ -83,6 +90,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
+  buttonInner: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   clearText: { color: '#9f3333', fontWeight: '700', fontSize: 12 },
   listContent: { paddingHorizontal: 12, paddingBottom: 24 },
 });

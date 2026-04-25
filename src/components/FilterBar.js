@@ -1,14 +1,31 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import AppIcon from './AppIcon';
+
+const IconInput = ({ iconName, style, ...props }) => (
+  <View style={[styles.inputWrap, style]}>
+    <AppIcon name={iconName} size={16} color="#5f7a80" />
+    <TextInput
+      {...props}
+      style={styles.inputField}
+      placeholderTextColor="#6a7f86"
+    />
+  </View>
+);
 
 const StatusButton = ({ value, current, onSelect }) => {
   const active = value === current;
+  const iconName = value === 'lost' ? 'help-circle-outline' : 'hand-coin-outline';
+
   return (
     <Pressable
       style={[styles.statusButton, active && styles.statusButtonActive]}
       onPress={() => onSelect(active ? '' : value)}
     >
-      <Text style={[styles.statusButtonText, active && styles.statusButtonTextActive]}>{value}</Text>
+      <View style={styles.statusInner}>
+        <AppIcon name={iconName} size={14} color={active ? '#ffffff' : '#33545c'} />
+        <Text style={[styles.statusButtonText, active && styles.statusButtonTextActive]}>{value}</Text>
+      </View>
     </Pressable>
   );
 };
@@ -16,26 +33,25 @@ const StatusButton = ({ value, current, onSelect }) => {
 const FilterBar = ({ filters, onChange, onSearch, onReset }) => {
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
+      <IconInput
+        iconName="magnify"
         placeholder="Search by title, description, or location"
-        placeholderTextColor="#6a7f86"
         value={filters.keyword}
         onChangeText={(text) => onChange({ ...filters, keyword: text })}
       />
 
       <View style={styles.twoColRow}>
-        <TextInput
-          style={[styles.input, styles.twoColInput]}
+        <IconInput
+          iconName="tag-outline"
+          style={styles.twoColInput}
           placeholder="Category"
-          placeholderTextColor="#6a7f86"
           value={filters.category}
           onChangeText={(text) => onChange({ ...filters, category: text })}
         />
-        <TextInput
-          style={[styles.input, styles.twoColInput]}
+        <IconInput
+          iconName="school-outline"
+          style={styles.twoColInput}
           placeholder="Campus"
-          placeholderTextColor="#6a7f86"
           value={filters.campus}
           onChangeText={(text) => onChange({ ...filters, campus: text })}
         />
@@ -49,10 +65,16 @@ const FilterBar = ({ filters, onChange, onSearch, onReset }) => {
           onSelect={(status) => onChange({ ...filters, status })}
         />
         <Pressable style={styles.resetButton} onPress={onReset}>
-          <Text style={styles.resetButtonText}>Reset</Text>
+          <View style={styles.actionInner}>
+            <AppIcon name="refresh" size={14} color="#34545c" />
+            <Text style={styles.resetButtonText}>Reset</Text>
+          </View>
         </Pressable>
         <Pressable style={styles.searchButton} onPress={onSearch}>
-          <Text style={styles.searchButtonText}>Search</Text>
+          <View style={styles.actionInner}>
+            <AppIcon name="magnify" size={14} color="#ffffff" />
+            <Text style={styles.searchButtonText}>Search</Text>
+          </View>
         </Pressable>
       </View>
     </View>
@@ -61,15 +83,23 @@ const FilterBar = ({ filters, onChange, onSearch, onReset }) => {
 
 const styles = StyleSheet.create({
   container: { marginBottom: 10 },
-  input: {
+  inputWrap: {
     borderWidth: 1,
     borderColor: '#d8d8d8',
     borderRadius: 10,
     paddingHorizontal: 10,
-    paddingVertical: 8,
+    minHeight: 42,
     backgroundColor: '#fff',
     marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  inputField: {
+    flex: 1,
     color: '#12343b',
+    paddingVertical: 8,
+    paddingHorizontal: 0,
   },
   twoColRow: { flexDirection: 'row', gap: 8 },
   twoColInput: { flex: 1 },
@@ -79,28 +109,35 @@ const styles = StyleSheet.create({
     borderColor: '#d0d0d0',
     borderRadius: 999,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    minHeight: 36,
     backgroundColor: '#fff',
     minWidth: 72,
     alignItems: 'center',
+    justifyContent: 'center',
   },
+  statusInner: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   statusButtonActive: { backgroundColor: '#0b7285', borderColor: '#0b7285' },
-  statusButtonText: { textTransform: 'uppercase', color: '#333', fontWeight: '600' },
+  statusButtonText: { textTransform: 'uppercase', color: '#33545c', fontWeight: '700', fontSize: 12 },
   statusButtonTextActive: { color: '#fff' },
+  actionInner: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   resetButton: {
     paddingHorizontal: 12,
-    paddingVertical: 9,
+    minHeight: 36,
     borderRadius: 8,
     backgroundColor: '#dfe9ec',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  resetButtonText: { color: '#34545c', fontWeight: '700' },
+  resetButtonText: { color: '#34545c', fontWeight: '700', fontSize: 12 },
   searchButton: {
     paddingHorizontal: 14,
-    paddingVertical: 9,
+    minHeight: 36,
     borderRadius: 8,
     backgroundColor: '#0b7285',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  searchButtonText: { color: '#fff', fontWeight: '700' },
+  searchButtonText: { color: '#fff', fontWeight: '700', fontSize: 12 },
 });
 
 export default FilterBar;

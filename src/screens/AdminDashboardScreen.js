@@ -9,13 +9,17 @@ import {
   Text,
   View,
 } from 'react-native';
+import AppIcon from '../components/AppIcon';
 import EmptyState from '../components/EmptyState';
 import { useAuth } from '../context/AuthContext';
 import { useItems } from '../context/ItemsContext';
 
-const StatCard = ({ label, value }) => (
+const StatCard = ({ label, value, iconName }) => (
   <View style={styles.statCard}>
-    <Text style={styles.statValue}>{value}</Text>
+    <View style={styles.statHeader}>
+      <AppIcon name={iconName} size={16} color="#2d6270" />
+      <Text style={styles.statValue}>{value}</Text>
+    </View>
     <Text style={styles.statLabel}>{label}</Text>
   </View>
 );
@@ -66,23 +70,30 @@ const AdminDashboardScreen = () => {
   if (!isAdmin) {
     return (
       <SafeAreaView style={styles.root}>
-        <EmptyState message="Admin access only." />
+        <EmptyState
+          iconName="shield-lock-outline"
+          title="Restricted Area"
+          message="Admin access only."
+        />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.root}>
-      <Text style={styles.title}>Admin Moderation</Text>
+      <View style={styles.titleRow}>
+        <AppIcon name="shield-account-outline" size={22} color="#12343b" />
+        <Text style={styles.title}>Admin Moderation</Text>
+      </View>
 
       {stats && (
         <View style={styles.statsGrid}>
-          <StatCard label="Users" value={stats.totalUsers} />
-          <StatCard label="Reports" value={stats.totalReports} />
-          <StatCard label="Lost" value={stats.lostReports} />
-          <StatCard label="Found" value={stats.foundReports} />
-          <StatCard label="Recovered" value={stats.recoveredReports} />
-          <StatCard label="Flagged" value={stats.flaggedReports} />
+          <StatCard label="Users" value={stats.totalUsers} iconName="account-group-outline" />
+          <StatCard label="Reports" value={stats.totalReports} iconName="file-document-multiple-outline" />
+          <StatCard label="Lost" value={stats.lostReports} iconName="help-circle-outline" />
+          <StatCard label="Found" value={stats.foundReports} iconName="hand-coin-outline" />
+          <StatCard label="Recovered" value={stats.recoveredReports} iconName="check-circle-outline" />
+          <StatCard label="Flagged" value={stats.flaggedReports} iconName="alert-outline" />
         </View>
       )}
 
@@ -99,23 +110,32 @@ const AdminDashboardScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.meta}>Reason: {item.flagReason || 'No reason provided'}</Text>
-            <Text style={styles.meta}>By: {item?.reportedBy?.name || 'Unknown'}</Text>
+            <Text style={styles.meta}><AppIcon name="alert-circle-outline" size={13} color="#6f4f4f" /> Reason: {item.flagReason || 'No reason provided'}</Text>
+            <Text style={styles.meta}><AppIcon name="account-outline" size={13} color="#6f4f4f" /> By: {item?.reportedBy?.name || 'Unknown'}</Text>
 
             <View style={styles.actions}>
               <Pressable style={[styles.actionButton, styles.keepButton]} onPress={() => review(item._id, 'keep')}>
-                <Text style={styles.actionText}>Keep Flagged</Text>
+                <View style={styles.actionInner}>
+                  <AppIcon name="alert-decagram-outline" size={13} color="#ffffff" />
+                  <Text style={styles.actionText}>Keep Flagged</Text>
+                </View>
               </Pressable>
               <Pressable style={[styles.actionButton, styles.clearButton]} onPress={() => review(item._id, 'clear')}>
-                <Text style={styles.actionText}>Clear Flag</Text>
+                <View style={styles.actionInner}>
+                  <AppIcon name="check-circle-outline" size={13} color="#ffffff" />
+                  <Text style={styles.actionText}>Clear Flag</Text>
+                </View>
               </Pressable>
               <Pressable style={[styles.actionButton, styles.deleteButton]} onPress={() => remove(item._id)}>
-                <Text style={styles.actionText}>Delete</Text>
+                <View style={styles.actionInner}>
+                  <AppIcon name="delete-outline" size={13} color="#ffffff" />
+                  <Text style={styles.actionText}>Delete</Text>
+                </View>
               </Pressable>
             </View>
           </View>
         )}
-        ListEmptyComponent={<EmptyState message="No flagged reports at this time." />}
+        ListEmptyComponent={<EmptyState iconName="shield-check-outline" message="No flagged reports at this time." />}
       />
     </SafeAreaView>
   );
@@ -123,7 +143,8 @@ const AdminDashboardScreen = () => {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#f6fafb', padding: 14 },
-  title: { fontSize: 20, fontWeight: '800', color: '#12343b', marginBottom: 10 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+  title: { fontSize: 20, fontWeight: '800', color: '#12343b' },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: '#1f4047', marginTop: 6, marginBottom: 8 },
   statsGrid: {
     flexDirection: 'row',
@@ -141,6 +162,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 8,
   },
+  statHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   statValue: { fontSize: 20, fontWeight: '800', color: '#164a55' },
   statLabel: { color: '#5b7a82', marginTop: 2, fontSize: 12 },
   card: {
@@ -161,6 +183,7 @@ const styles = StyleSheet.create({
     minWidth: 100,
     alignItems: 'center',
   },
+  actionInner: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   keepButton: { backgroundColor: '#a65f2a' },
   clearButton: { backgroundColor: '#0f7a55' },
   deleteButton: { backgroundColor: '#b04b4b' },

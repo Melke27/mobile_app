@@ -18,6 +18,25 @@ import { itemService } from '../services/itemService';
 import AppIcon from '../components/AppIcon';
 import { generateItemImageUrl, resolveItemImageUrl } from '../utils/imageFallback';
 
+const ActionButton = ({
+  label,
+  iconName,
+  onPress,
+  style,
+  disabled = false,
+}) => (
+  <Pressable
+    style={[styles.button, style, disabled && styles.disabledButton]}
+    onPress={onPress}
+    disabled={disabled}
+  >
+    <View style={styles.buttonInner}>
+      <AppIcon name={iconName} size={15} color="#ffffff" />
+      <Text style={styles.buttonText}>{label}</Text>
+    </View>
+  </Pressable>
+);
+
 const ItemDetailScreen = ({ route, navigation }) => {
   const initial = route.params?.item || {};
   const { user } = useAuth();
@@ -194,22 +213,23 @@ const ItemDetailScreen = ({ route, navigation }) => {
 
         {isGuest ? (
           <View style={styles.guestCard}>
-            <Text style={styles.guestTitle}>Sign in for full actions</Text>
+            <View style={styles.guestTitleRow}>
+              <AppIcon name="shield-account-outline" size={16} color="#15424c" />
+              <Text style={styles.guestTitle}>Sign in for full actions</Text>
+            </View>
             <Text style={styles.guestMeta}>Login to report, flag, recover items, and chat with reporters.</Text>
-            <Pressable style={[styles.button, styles.authButton]} onPress={openAccountTab}>
-              <Text style={styles.buttonText}>Go to Login</Text>
-            </Pressable>
+            <ActionButton label="Go to Login" iconName="login" style={styles.authButton} onPress={openAccountTab} />
           </View>
         ) : (
           <>
             <View style={styles.row}>
-              <Pressable
-                style={[styles.button, isRecovered && styles.disabledButton]}
+              <ActionButton
+                label={isRecovered ? 'Already Recovered' : 'Mark Recovered'}
+                iconName={isRecovered ? 'check-circle-outline' : 'clipboard-check-outline'}
+                style={styles.recoverButton}
                 onPress={onRecovered}
                 disabled={isRecovered}
-              >
-                <Text style={styles.buttonText}>{isRecovered ? 'Already Recovered' : 'Mark Recovered'}</Text>
-              </Pressable>
+              />
             </View>
 
             <TextInput
@@ -219,33 +239,35 @@ const ItemDetailScreen = ({ route, navigation }) => {
               placeholder="Reason for flagging"
               placeholderTextColor="#6a7f86"
             />
-            <Pressable style={[styles.button, styles.warn]} onPress={onFlag}>
-              <Text style={styles.buttonText}>Flag Post</Text>
-            </Pressable>
+            <ActionButton label="Flag Post" iconName="flag-outline" style={styles.warn} onPress={onFlag} />
           </>
         )}
 
         {canChat && (
-          <Pressable
-            style={[styles.button, styles.chatButton]}
+          <ActionButton
+            label="Chat with Reporter"
+            iconName="chat-processing-outline"
+            style={styles.chatButton}
             onPress={() => navigation.navigate('Chat', { item, otherUserId: receiverId })}
-          >
-            <Text style={styles.buttonText}>Chat with Reporter</Text>
-          </Pressable>
+          />
         )}
 
         <View style={styles.row}>
-          <Pressable style={[styles.button, styles.saveButton]} onPress={onToggleSaved}>
-            <Text style={styles.buttonText}>{saved ? 'Remove from Saved' : 'Save Item'}</Text>
-          </Pressable>
+          <ActionButton
+            label={saved ? 'Remove from Saved' : 'Save Item'}
+            iconName={saved ? 'bookmark-remove-outline' : 'bookmark-plus-outline'}
+            style={styles.saveButton}
+            onPress={onToggleSaved}
+          />
         </View>
         <View style={styles.row}>
-          <Pressable style={[styles.button, styles.shareButton]} onPress={onShare}>
-            <Text style={styles.buttonText}>Share Item</Text>
-          </Pressable>
+          <ActionButton label="Share Item" iconName="share-variant-outline" style={styles.shareButton} onPress={onShare} />
         </View>
 
-        <Text style={styles.sectionTitle}>Potential Matches</Text>
+        <View style={styles.sectionTitleRow}>
+          <AppIcon name="target-account" size={18} color="#12343b" />
+          <Text style={styles.sectionTitle}>Potential Matches</Text>
+        </View>
         {isGuest ? (
           <Text style={styles.matchMeta}>Login to see personalized match scoring.</Text>
         ) : matches.length ? (
@@ -300,14 +322,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 42,
+    flex: 1,
   },
+  buttonInner: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   disabledButton: { backgroundColor: '#8ea8ae' },
+  recoverButton: { backgroundColor: '#0b7285' },
   warn: { backgroundColor: '#b04b4b', marginTop: 8 },
   chatButton: { marginTop: 10, backgroundColor: '#1d7e3f' },
   authButton: { marginTop: 10, backgroundColor: '#0b7285' },
   saveButton: { marginTop: 10, backgroundColor: '#b57e14' },
   shareButton: { marginTop: 10, backgroundColor: '#3457a8' },
-  buttonText: { color: '#fff', fontWeight: '700' },
+  buttonText: { color: '#fff', fontWeight: '700', fontSize: 13 },
   flagInput: {
     marginTop: 10,
     borderWidth: 1,
@@ -318,7 +345,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     color: '#12343b',
   },
-  sectionTitle: { marginTop: 20, fontSize: 18, fontWeight: '800', color: '#12343b', marginBottom: 8 },
+  sectionTitleRow: { marginTop: 20, marginBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  sectionTitle: { fontSize: 18, fontWeight: '800', color: '#12343b' },
   guestCard: {
     marginTop: 16,
     backgroundColor: '#eef7f9',
@@ -327,6 +355,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 12,
   },
+  guestTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   guestTitle: { fontWeight: '800', color: '#15424c', fontSize: 15 },
   guestMeta: { marginTop: 5, color: '#4a6d75' },
   matchCard: {

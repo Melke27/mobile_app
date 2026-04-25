@@ -20,7 +20,10 @@ const resolveAuthErrorMessage = (error, fallbackMessage) => {
   }
 
   if (!error?.response) {
-    return 'Could not reach the server. Make sure backend is running and phone is connected to Metro/ADB reverse.';
+    if (__DEV__) {
+      return 'Could not reach the server. Make sure backend is running and phone is connected to Metro/ADB reverse.';
+    }
+    return 'Could not reach the internet server. Please check your phone internet and try again in about 1 minute.';
   }
 
   return fallbackMessage;

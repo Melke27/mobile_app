@@ -6,7 +6,9 @@ import { generateItemImageUrl, resolveItemImageUrl } from '../utils/imageFallbac
 const ItemCard = ({ item, onPress }) => {
   const statusStyle =
     item.status === 'lost' ? styles.lost : item.status === 'recovered' ? styles.recovered : styles.found;
-  const statusIcon = item.status === 'lost' ? 'compass-outline' : item.status === 'recovered' ? 'check-circle-outline' : 'package-variant-closed';
+  const statusIcon =
+    item.status === 'lost' ? 'compass-outline' : item.status === 'recovered' ? 'check-circle-outline' : 'package-variant-closed';
+  const statusColor = item.status === 'lost' ? '#8a1f1f' : item.status === 'recovered' ? '#2b3c78' : '#156e22';
   const [failedPrimaryImage, setFailedPrimaryImage] = useState(false);
   const imageSource = useMemo(() => {
     const sourceUrl = failedPrimaryImage ? generateItemImageUrl(item) : resolveItemImageUrl(item);
@@ -32,7 +34,7 @@ const ItemCard = ({ item, onPress }) => {
           {item.title}
         </Text>
         <Text style={[styles.badge, statusStyle]}>
-          <AppIcon name={statusIcon} size={12} color={statusStyle.color} /> {item.status}
+          <AppIcon name={statusIcon} size={12} color={statusColor} /> {item.status}
         </Text>
       </View>
       <Text style={styles.description} numberOfLines={2}>

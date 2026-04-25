@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Image,
   KeyboardAvoidingView,
@@ -42,6 +43,41 @@ const toProfileImageValue = (asset) => {
   return asset.uri || '';
 };
 
+const CompactButton = ({ label, onPress, loading, disabled, tone = 'neutral', style }) => {
+  const toneStyle =
+    tone === 'danger'
+      ? styles.compactButtonDanger
+      : tone === 'primary'
+        ? styles.compactButtonPrimary
+        : styles.compactButtonNeutral;
+  const toneTextStyle =
+    tone === 'danger'
+      ? styles.compactButtonDangerText
+      : tone === 'primary'
+        ? styles.compactButtonPrimaryText
+        : styles.compactButtonNeutralText;
+
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        styles.compactButton,
+        toneStyle,
+        style,
+        (disabled || loading) && styles.compactButtonDisabled,
+        pressed && !disabled && !loading && styles.compactButtonPressed,
+      ]}
+      onPress={onPress}
+      disabled={disabled || loading}
+    >
+      {loading ? (
+        <ActivityIndicator size="small" color={tone === 'primary' ? '#ffffff' : '#174651'} />
+      ) : (
+        <Text style={[styles.compactButtonText, toneTextStyle]}>{label}</Text>
+      )}
+    </Pressable>
+  );
+};
+
 const AccountScreen = () => {
   const { user, updateProfile, updatePassword, logout } = useAuth();
   const { clearSavedItems } = useItems();
@@ -56,10 +92,7 @@ const AccountScreen = () => {
     newPassword: '',
     confirmNewPassword: '',
   });
-  const [savingProfile, setSavingProfile] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
-  const [changingImage, setChangingImage] = useState(false);
-  const [clearingData, setClearingData] = useState(false);
+  const [actionLoading, setActionLoading] = useState('');
 
   useEffect(() => {
     setProfileForm({
@@ -85,7 +118,8 @@ const AccountScreen = () => {
   const updatePasswordField = (patch) => setPasswordForm((prev) => ({ ...prev, ...patch }));
 
   const chooseProfileImage = async (source) => {
-    setChangingImage(true);
+    const loadingKey = source === 'camera' ? 'cameraImage' : 'galleryImage';
+    setActionLoading(loadingKey);
     try {
       const allowed =
         source === 'camera'
@@ -108,7 +142,7 @@ const AccountScreen = () => {
     } catch (_error) {
       Alert.alert('Image', 'Could not load image. Please try again.');
     } finally {
-      setChangingImage(false);
+      setActionLoading('');
     }
   };
 
@@ -133,12 +167,12 @@ const AccountScreen = () => {
       return;
     }
 
-    setSavingProfile(true);
+    setActionLoading('saveProfile');
     try {
       await updateProfile(payload);
       Alert.alert('Success', 'Profile updated successfully.');
     } finally {
-      setSavingProfile(false);
+      setActionLoading('');
     }
   };
 
@@ -156,7 +190,7 @@ const AccountScreen = () => {
       return;
     }
 
-    setChangingPassword(true);
+    setActionLoading('changePassword');
     try {
       await updatePassword({
         currentPassword: passwordForm.currentPassword,
@@ -169,7 +203,7 @@ const AccountScreen = () => {
       });
       Alert.alert('Success', 'Password updated successfully.');
     } finally {
-      setChangingPassword(false);
+      setActionLoading('');
     }
   };
 
@@ -187,12 +221,12 @@ const AccountScreen = () => {
         text: 'Clear',
         style: 'destructive',
         onPress: async () => {
-          setClearingData(true);
+          setActionLoading('clearSaved');
           try {
             await clearSavedItems();
             Alert.alert('Done', 'Saved items cleared.');
           } finally {
-            setClearingData(false);
+            setActionLoading('');
           }
         },
       },
@@ -209,7 +243,7 @@ const AccountScreen = () => {
           text: 'Clear',
           style: 'destructive',
           onPress: async () => {
-            setClearingData(true);
+            setActionLoading('clearCache');
             try {
               await Promise.all([
                 storageService.remove(storageService.keys.LAST_REPORT_DRAFT),
@@ -217,7 +251,7 @@ const AccountScreen = () => {
               ]);
               Alert.alert('Done', 'Draft and cache cleared.');
             } finally {
-              setClearingData(false);
+              setActionLoading('');
             }
           },
         },
@@ -240,19 +274,28 @@ const AccountScreen = () => {
             <Text style={styles.nameText}>{profileForm.name || 'Campus User'}</Text>
             <Text style={styles.metaText}>Member since {memberSince}</Text>
             <View style={styles.imageButtonsRow}>
-              <Pressable style={styles.imageButton} onPress={() => chooseProfileImage('camera')} disabled={changingImage}>
-                <Text style={styles.imageButtonText}>{changingImage ? 'Working...' : 'Camera'}</Text>
-              </Pressable>
-              <Pressable style={styles.imageButton} onPress={() => chooseProfileImage('gallery')} disabled={changingImage}>
-                <Text style={styles.imageButtonText}>{changingImage ? 'Working...' : 'Gallery'}</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.imageButton, styles.removeImageButton]}
+              <CompactButton
+                label="Camera"
+                tone="neutral"
+                loading={actionLoading === 'cameraImage'}
+                onPress={() => chooseProfileImage('camera')}
+                style={styles.inlineCompact}
+              />
+              <CompactButton
+                label="Gallery"
+                tone="neutral"
+                loading={actionLoading === 'galleryImage'}
+                onPress={() => chooseProfileImage('gallery')}
+                style={styles.inlineCompact}
+              />
+              <CompactButton
+                label="Remove"
+                tone="danger"
+                loading={false}
                 onPress={() => updateProfileField({ avatarUrl: '' })}
-                disabled={changingImage}
-              >
-                <Text style={[styles.imageButtonText, styles.removeImageButtonText]}>Remove</Text>
-              </Pressable>
+                style={styles.inlineCompact}
+                disabled={Boolean(actionLoading)}
+              />
             </View>
           </View>
 
@@ -282,13 +325,13 @@ const AccountScreen = () => {
               value={profileForm.campus}
               onChangeText={(campus) => updateProfileField({ campus })}
             />
-            <Pressable
-              style={[styles.primaryButton, savingProfile && styles.primaryButtonDisabled]}
+            <CompactButton
+              label="Save Profile"
+              tone="primary"
+              loading={actionLoading === 'saveProfile'}
               onPress={onSaveProfile}
-              disabled={savingProfile}
-            >
-              <Text style={styles.primaryButtonText}>{savingProfile ? 'Saving...' : 'Save Profile'}</Text>
-            </Pressable>
+              disabled={Boolean(actionLoading) && actionLoading !== 'saveProfile'}
+            />
           </View>
 
           <View style={styles.card}>
@@ -317,26 +360,40 @@ const AccountScreen = () => {
               value={passwordForm.confirmNewPassword}
               onChangeText={(confirmNewPassword) => updatePasswordField({ confirmNewPassword })}
             />
-            <Pressable
-              style={[styles.primaryButton, changingPassword && styles.primaryButtonDisabled]}
+            <CompactButton
+              label="Change Password"
+              tone="primary"
+              loading={actionLoading === 'changePassword'}
               onPress={onChangePassword}
-              disabled={changingPassword}
-            >
-              <Text style={styles.primaryButtonText}>{changingPassword ? 'Updating...' : 'Change Password'}</Text>
-            </Pressable>
+              disabled={Boolean(actionLoading) && actionLoading !== 'changePassword'}
+            />
           </View>
 
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Account Actions</Text>
-            <Pressable style={styles.actionButton} onPress={onClearSavedItems} disabled={clearingData}>
-              <Text style={styles.actionButtonText}>{clearingData ? 'Working...' : 'Clear Saved Items'}</Text>
-            </Pressable>
-            <Pressable style={styles.actionButton} onPress={onClearDraftAndCache} disabled={clearingData}>
-              <Text style={styles.actionButtonText}>{clearingData ? 'Working...' : 'Clear Draft + Cache'}</Text>
-            </Pressable>
-            <Pressable style={styles.logoutButton} onPress={onLogout}>
-              <Text style={styles.logoutText}>Sign Out</Text>
-            </Pressable>
+            <View style={styles.actionsStack}>
+              <CompactButton
+                label="Clear Saved Items"
+                tone="neutral"
+                loading={actionLoading === 'clearSaved'}
+                onPress={onClearSavedItems}
+                disabled={Boolean(actionLoading) && actionLoading !== 'clearSaved'}
+              />
+              <CompactButton
+                label="Clear Draft + Cache"
+                tone="neutral"
+                loading={actionLoading === 'clearCache'}
+                onPress={onClearDraftAndCache}
+                disabled={Boolean(actionLoading) && actionLoading !== 'clearCache'}
+              />
+              <CompactButton
+                label="Sign Out"
+                tone="danger"
+                loading={false}
+                onPress={onLogout}
+                disabled={Boolean(actionLoading)}
+              />
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -371,17 +428,27 @@ const styles = StyleSheet.create({
   nameText: { marginTop: 10, fontSize: 20, fontWeight: '800', color: '#143b44' },
   metaText: { marginTop: 2, color: '#5f7a80' },
   imageButtonsRow: { marginTop: 12, flexDirection: 'row', gap: 8 },
-  imageButton: {
-    borderWidth: 1,
-    borderColor: '#9dc2cb',
-    backgroundColor: '#f4fcff',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+  inlineCompact: {
+    flex: 1,
   },
-  imageButtonText: { color: '#105666', fontWeight: '700' },
-  removeImageButton: { borderColor: '#e6b7b7', backgroundColor: '#fff7f7' },
-  removeImageButtonText: { color: '#8f3232' },
+  compactButton: {
+    borderWidth: 1,
+    borderRadius: 8,
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+  },
+  compactButtonPressed: { opacity: 0.75 },
+  compactButtonDisabled: { opacity: 0.6 },
+  compactButtonNeutral: { borderColor: '#c0d6dc', backgroundColor: '#f7fcfd' },
+  compactButtonPrimary: { borderColor: '#0b7285', backgroundColor: '#0b7285' },
+  compactButtonDanger: { borderColor: '#e3b1b1', backgroundColor: '#fff6f6' },
+  compactButtonText: { fontWeight: '700', fontSize: 13, lineHeight: 16 },
+  compactButtonNeutralText: { color: '#21464f' },
+  compactButtonPrimaryText: { color: '#ffffff' },
+  compactButtonDangerText: { color: '#9f3333' },
   card: {
     backgroundColor: '#ffffff',
     borderRadius: 14,
@@ -400,29 +467,7 @@ const styles = StyleSheet.create({
     color: '#12343b',
     backgroundColor: '#fff',
   },
-  primaryButton: { backgroundColor: '#0b7285', borderRadius: 8, paddingVertical: 12, alignItems: 'center' },
-  primaryButtonDisabled: { backgroundColor: '#86a9b2' },
-  primaryButtonText: { color: '#fff', fontWeight: '700' },
-  actionButton: {
-    borderWidth: 1,
-    borderColor: '#c0d6dc',
-    backgroundColor: '#f7fcfd',
-    borderRadius: 8,
-    paddingVertical: 11,
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  actionButtonText: { color: '#21464f', fontWeight: '700' },
-  logoutButton: {
-    borderWidth: 1,
-    borderColor: '#e3b1b1',
-    backgroundColor: '#fff6f6',
-    borderRadius: 8,
-    paddingVertical: 11,
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  logoutText: { color: '#9f3333', fontWeight: '800' },
+  actionsStack: { gap: 8 },
 });
 
 export default AccountScreen;

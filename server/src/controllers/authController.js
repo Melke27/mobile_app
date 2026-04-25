@@ -1,33 +1,45 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
+const MAX_AVATAR_LENGTH = 1500000;
+
+const trimString = (value = '') => (typeof value === 'string' ? value.trim() : '');
+
+const isValidEmail = (email = '') => /^\S+@\S+\.\S+$/.test(email);
 
 const serializeUser = (user) => ({
   _id: user._id,
   name: user.name,
   email: user.email,
   campus: user.campus,
+  avatarUrl: user.avatarUrl || '',
   role: user.role,
   createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
 });
 
 const register = async (req, res, next) => {
   try {
-    const name = (req.body.name || '').trim();
-    const email = (req.body.email || '').toLowerCase().trim();
+    const name = trimString(req.body.name);
+    const email = trimString(req.body.email).toLowerCase();
     const password = req.body.password || '';
-    const campus = (req.body.campus || '').trim();
+    const campus = trimString(req.body.campus);
+    const avatarUrl = trimString(req.body.avatarUrl);
 
     if (!name || !email || !password || !campus) {
       return res.status(400).json({ message: 'name, email, password, and campus are required.' });
     }
 
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
+    if (!isValidEmail(email)) {
       return res.status(400).json({ message: 'Please provide a valid email address.' });
     }
 
     if (password.length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters.' });
+    }
+
+    if (avatarUrl.length > MAX_AVATAR_LENGTH) {
+      return res.status(400).json({ message: 'Profile image is too large. Please choose a smaller image.' });
     }
 
     const existing = await User.findOne({ email });
@@ -44,6 +56,7 @@ const register = async (req, res, next) => {
       email,
       passwordHash,
       campus,
+      avatarUrl,
       role,
     });
 
@@ -88,4 +101,79 @@ const me = async (req, res) => {
   return res.json({ user: serializeUser(req.user) });
 };
 
-module.exports = { register, login, me };
+const updateProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const nextName = trimString(req.body.name);
+    const nextEmail = trimString(req.body.email).toLowerCase();
+    const nextCampus = trimString(req.body.campus);
+    const nextAvatarUrl = trimString(req.body.avatarUrl);
+
+    if (!nextName || !nextEmail || !nextCampus) {
+      return res.status(400).json({ message: 'name, email, and campus are required.' });
+    }
+
+    if (!isValidEmail(nextEmail)) {
+      return res.status(400).json({ message: 'Please provide a valid email address.' });
+    }
+
+    if (nextAvatarUrl.length > MAX_AVATAR_LENGTH) {
+      return res.status(400).json({ message: 'Profile image is too large. Please choose a smaller image.' });
+    }
+
+    if (nextEmail !== user.email) {
+      const existing = await User.findOne({ email: nextEmail, _id: { $ne: user._id } });
+      if (existing) {
+        return res.status(409).json({ message: 'Email is already registered.' });
+      }
+    }
+
+    user.name = nextName;
+    user.email = nextEmail;
+    user.campus = nextCampus;
+    user.avatarUrl = nextAvatarUrl;
+    await user.save();
+
+    return res.json({ user: serializeUser(user) });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const updatePassword = async (req, res, next) => {
+  try {
+    const currentPassword = req.body.currentPassword || '';
+    const newPassword = req.body.newPassword || '';
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'currentPassword and newPassword are required.' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters.' });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const matches = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!matches) {
+      return res.status(401).json({ message: 'Current password is incorrect.' });
+    }
+
+    user.passwordHash = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    return res.json({ message: 'Password updated successfully.' });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports = { register, login, me, updateProfile, updatePassword };

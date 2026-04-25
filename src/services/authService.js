@@ -15,4 +15,14 @@ export const authService = {
     const { data } = await apiClient.get('/auth/me');
     return data;
   },
+
+  async updateProfile(payload) {
+    const { data } = await apiClient.put('/auth/profile', payload);
+    return data;
+  },
+
+  async updatePassword(payload) {
+    const { data } = await apiClient.put('/auth/password', payload);
+    return data;
+  },
 };

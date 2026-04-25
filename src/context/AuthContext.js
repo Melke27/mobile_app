@@ -86,6 +86,31 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateProfile = async (payload) => {
+    try {
+      const data = await authService.updateProfile(payload);
+      const nextSession = {
+        ...(session || {}),
+        user: data.user,
+      };
+      await persistSession(nextSession);
+      return data;
+    } catch (error) {
+      Alert.alert('Profile update failed', resolveAuthErrorMessage(error, 'Please try again.'));
+      throw error;
+    }
+  };
+
+  const updatePassword = async (payload) => {
+    try {
+      const data = await authService.updatePassword(payload);
+      return data;
+    } catch (error) {
+      Alert.alert('Password update failed', resolveAuthErrorMessage(error, 'Please try again.'));
+      throw error;
+    }
+  };
+
   const logout = async () => {
     await persistSession(null);
   };
@@ -98,6 +123,8 @@ export const AuthProvider = ({ children }) => {
       loading,
       login,
       register,
+      updateProfile,
+      updatePassword,
       logout,
       isAdmin: session?.user?.role === 'admin',
     }),

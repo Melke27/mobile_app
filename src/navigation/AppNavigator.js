@@ -14,6 +14,7 @@ import ChatScreen from '../screens/ChatScreen';
 import VerificationScreen from '../screens/VerificationScreen';
 import AdminDashboardScreen from '../screens/AdminDashboardScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import AccountScreen from '../screens/AccountScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,6 +26,7 @@ const TAB_META = {
   Saved: { icon: '⭐', label: 'Saved' },
   Alerts: { icon: '🔔', label: 'Alerts' },
   Verify: { icon: '✅', label: 'Verify' },
+  Account: { icon: '👤', label: 'Account' },
   Admin: { icon: '🛡️', label: 'Admin' },
 };
 
@@ -59,6 +61,7 @@ const MainTabs = ({ isAdmin }) => {
       <Tab.Screen name="Saved" component={SavedItemsScreen} options={{ title: TAB_META.Saved.label }} />
       <Tab.Screen name="Alerts" component={NotificationsScreen} options={{ title: TAB_META.Alerts.label }} />
       <Tab.Screen name="Verify" component={VerificationScreen} options={{ title: TAB_META.Verify.label }} />
+      <Tab.Screen name="Account" component={AccountScreen} options={{ title: TAB_META.Account.label }} />
       {isAdmin && <Tab.Screen name="Admin" component={AdminDashboardScreen} options={{ title: TAB_META.Admin.label }} />}
     </Tab.Navigator>
   );

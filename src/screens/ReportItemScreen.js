@@ -31,15 +31,57 @@ const defaultForm = {
   title: '',
   description: '',
   category: 'Other',
+  otherItemName: '',
   campus: DEFAULT_CAMPUS,
   locationText: '',
   imageUrl: '',
   location: null,
+  lastSeenHint: '',
 };
 
+const OTHER_CATEGORY = 'Other';
 const TITLE_MAX = 80;
+const ITEM_NAME_MAX = 50;
 const DESC_MAX = 600;
 const LOCATION_MAX = 120;
+const LAST_SEEN_OPTIONS = ['Today', 'Yesterday', 'This Week', 'Last Week', 'Not Sure'];
+const TEMPLATE_PRESETS = [
+  {
+    key: 'phone',
+    label: 'Phone',
+    category: 'Electronics',
+    title: '{{status}} phone near {{campus}}',
+    description: 'Brand/model:\nColor:\nUnique marks:\nExact place:\nOwner proof or contact:',
+  },
+  {
+    key: 'id',
+    label: 'ID Card',
+    category: 'ID',
+    title: '{{status}} ID card at {{campus}}',
+    description: 'Name initials visible:\nInstitute/faculty:\nCard color:\nWhere found/lost:\nHow to claim:',
+  },
+  {
+    key: 'bag',
+    label: 'Bag',
+    category: 'Accessories',
+    title: '{{status}} bag near {{campus}}',
+    description: 'Bag color/type:\nBrand/logo:\nItems inside:\nExact place/time:\nSafe contact method:',
+  },
+  {
+    key: 'keys',
+    label: 'Keys',
+    category: 'Accessories',
+    title: '{{status}} keys around {{campus}}',
+    description: 'Keychain color:\nHow many keys:\nSpecial marks:\nLast known location:\nPickup details:',
+  },
+  {
+    key: 'laptop',
+    label: 'Laptop',
+    category: 'Electronics',
+    title: '{{status}} laptop at {{campus}}',
+    description: 'Brand/model:\nColor:\nSticker or case:\nLast seen time/location:\nOwnership proof:',
+  },
+];
 
 const ActionButton = ({
   label,
@@ -87,8 +129,13 @@ const Chip = ({ label, selected, onPress }) => (
   </Pressable>
 );
 
+const buildAutoTitle = (status, value) => {
+  const statusLabel = status === 'lost' ? 'Lost' : 'Found';
+  return `${statusLabel} ${String(value || '').trim()}`.replace(/\s+/g, ' ').trim();
+};
+
 const ReportItemScreen = () => {
-  const { createReport } = useItems();
+  const { createReport, items } = useItems();
   const { user } = useAuth();
 
   const [form, setForm] = useState(defaultForm);
@@ -101,11 +148,13 @@ const ReportItemScreen = () => {
     const bootstrap = async () => {
       const draft = await storageService.getJSON(storageService.keys.LAST_REPORT_DRAFT, null);
       if (draft) {
-        setForm(draft);
+        setForm({ ...defaultForm, ...draft });
       }
 
       draftReady.current = true;
-      permissionsService.requestNotificationPermission().catch(() => undefined);
+      permissionsService.requestNotificationPermission().catch((error) => {
+        console.warn('Notification permission request failed', error);
+      });
     };
 
     bootstrap();
@@ -122,11 +171,24 @@ const ReportItemScreen = () => {
     }
 
     const timer = setTimeout(() => {
-      storageService.setJSON(storageService.keys.LAST_REPORT_DRAFT, form).catch(() => undefined);
+      storageService.setJSON(storageService.keys.LAST_REPORT_DRAFT, form).catch((error) => {
+        console.warn('Draft auto-save failed', error);
+      });
     }, 300);
 
     return () => clearTimeout(timer);
   }, [form]);
+
+  const resolvedTitle = useMemo(() => {
+    const explicitTitle = form.title.trim();
+    if (explicitTitle) {
+      return explicitTitle;
+    }
+    if (form.category === OTHER_CATEGORY && form.otherItemName.trim()) {
+      return buildAutoTitle(form.status, form.otherItemName);
+    }
+    return '';
+  }, [form.category, form.otherItemName, form.status, form.title]);
 
   const qualityChecks = useMemo(() => {
     const hasLocationText = form.locationText.trim().length >= 3;
@@ -137,22 +199,63 @@ const ReportItemScreen = () => {
     );
 
     const checks = [
-      { label: 'Specific title', passed: form.title.trim().length >= 8 },
+      { label: 'Specific title', passed: resolvedTitle.length >= 8 },
       { label: 'Detailed description', passed: form.description.trim().length >= 25 },
       { label: 'Category selected', passed: Boolean(form.category) },
       { label: 'Location added', passed: hasLocationText || hasGps },
+      { label: 'Last-seen time added', passed: Boolean(form.lastSeenHint) },
       { label: 'Photo attached', passed: Boolean(form.imageUrl) },
     ];
     return checks;
-  }, [form]);
+  }, [form, resolvedTitle]);
 
   const qualityPercent = useMemo(() => {
     const passed = qualityChecks.filter((check) => check.passed).length;
     return Math.round((passed / qualityChecks.length) * 100);
   }, [qualityChecks]);
 
-  const isFormValid = useMemo(() => !validateReport(form), [form]);
+  const isFormValid = useMemo(() => !validateReport({ ...form, title: resolvedTitle }), [form, resolvedTitle]);
   const isBusy = Boolean(busyAction) || submitting;
+
+  const similarReports = useMemo(() => {
+    const normalizedTitle = resolvedTitle.toLowerCase();
+    const titleTokens = normalizedTitle.split(/\s+/).filter((token) => token.length >= 3);
+
+    const candidates = items
+      .map((entry) => {
+        let score = 0;
+        if ((entry?.campus || '').toLowerCase() === (form.campus || '').toLowerCase()) {
+          score += 2;
+        }
+        if ((entry?.category || '').toLowerCase() === (form.category || '').toLowerCase()) {
+          score += 2;
+        }
+        if ((entry?.status || '').toLowerCase() === (form.status || '').toLowerCase()) {
+          score += 1;
+        }
+
+        const haystack = [entry?.title, entry?.description, entry?.locationText].join(' ').toLowerCase();
+        if (titleTokens.length) {
+          const tokenMatches = titleTokens.filter((token) => haystack.includes(token)).length;
+          score += Math.min(3, tokenMatches);
+        }
+
+        return { entry, score };
+      })
+      .filter((candidate) => candidate.score >= 3)
+      .sort((a, b) => {
+        if (b.score !== a.score) {
+          return b.score - a.score;
+        }
+        const aTime = a.entry?.createdAt ? new Date(a.entry.createdAt).getTime() : 0;
+        const bTime = b.entry?.createdAt ? new Date(b.entry.createdAt).getTime() : 0;
+        return bTime - aTime;
+      })
+      .slice(0, 3)
+      .map((candidate) => candidate.entry);
+
+    return candidates;
+  }, [form.campus, form.category, form.status, items, resolvedTitle]);
 
   const updateForm = (nextPatch) => {
     setForm((prev) => ({ ...prev, ...nextPatch }));
@@ -161,8 +264,18 @@ const ReportItemScreen = () => {
   const onStatusChange = (status) => {
     setForm((prev) => {
       const next = { ...prev, status };
-      if (!prev.title.trim() && prev.category !== 'Other') {
-        next.title = `${status === 'lost' ? 'Lost' : 'Found'} ${prev.category}`;
+      const previousAutoTitle =
+        prev.category === OTHER_CATEGORY
+          ? (prev.otherItemName.trim() ? buildAutoTitle(prev.status, prev.otherItemName) : '')
+          : buildAutoTitle(prev.status, prev.category);
+      const shouldAutoUpdate = !prev.title.trim() || prev.title.trim() === previousAutoTitle;
+
+      if (shouldAutoUpdate) {
+        if (prev.category === OTHER_CATEGORY) {
+          next.title = prev.otherItemName.trim() ? buildAutoTitle(status, prev.otherItemName) : '';
+        } else {
+          next.title = buildAutoTitle(status, prev.category);
+        }
       }
       return next;
     });
@@ -171,10 +284,62 @@ const ReportItemScreen = () => {
   const onCategoryChange = (category) => {
     setForm((prev) => {
       const next = { ...prev, category };
-      if (!prev.title.trim() && category !== 'Other') {
-        next.title = `${prev.status === 'lost' ? 'Lost' : 'Found'} ${category}`;
+      const previousAutoTitle =
+        prev.category === OTHER_CATEGORY
+          ? (prev.otherItemName.trim() ? buildAutoTitle(prev.status, prev.otherItemName) : '')
+          : buildAutoTitle(prev.status, prev.category);
+      const shouldAutoUpdate = !prev.title.trim() || prev.title.trim() === previousAutoTitle;
+
+      if (shouldAutoUpdate) {
+        if (category === OTHER_CATEGORY) {
+          next.title = prev.otherItemName.trim() ? buildAutoTitle(prev.status, prev.otherItemName) : '';
+        } else {
+          next.title = buildAutoTitle(prev.status, category);
+        }
       }
       return next;
+    });
+  };
+
+  const onOtherItemNameChange = (otherItemName) => {
+    setForm((prev) => {
+      const next = { ...prev, otherItemName };
+      if (prev.category !== OTHER_CATEGORY) {
+        return next;
+      }
+
+      const previousAutoTitle = prev.otherItemName.trim()
+        ? buildAutoTitle(prev.status, prev.otherItemName)
+        : '';
+      const shouldAutoUpdate = !prev.title.trim() || prev.title.trim() === previousAutoTitle;
+
+      if (shouldAutoUpdate) {
+        next.title = otherItemName.trim() ? buildAutoTitle(prev.status, otherItemName) : '';
+      }
+      return next;
+    });
+  };
+
+  const applyTemplate = (template) => {
+    setForm((prev) => {
+      const statusWord = prev.status === 'lost' ? 'Lost' : 'Found';
+      const campus = prev.campus || DEFAULT_CAMPUS;
+      const templateTitle = template.title
+        .replace('{{status}}', statusWord)
+        .replace('{{campus}}', campus);
+      const nextDescription = prev.description.trim()
+        ? `${prev.description.trim()}\n\n${template.description}`
+        : template.description;
+
+      return {
+        ...prev,
+        category: template.category,
+        otherItemName: '',
+        title: prev.title.trim() ? prev.title : templateTitle,
+        description: nextDescription,
+        locationText: prev.locationText || `Near ${campus}`,
+        lastSeenHint: prev.lastSeenHint || 'Today',
+      };
     });
   };
 
@@ -232,8 +397,11 @@ const ReportItemScreen = () => {
           location: current,
           locationText: prev.locationText || `Near ${prev.campus}`,
         }));
-      } catch (_error) {
-        Alert.alert('Location error', 'Could not access GPS. Please enable location permission.');
+      } catch (error) {
+        Alert.alert(
+          'Location error',
+          error?.message || 'Could not access GPS. Please enable location permission.'
+        );
       }
     } finally {
       setBusyAction('');
@@ -253,8 +421,8 @@ const ReportItemScreen = () => {
         return;
       }
       await Linking.openURL(mapsUrl);
-    } catch (_error) {
-      Alert.alert('Maps', 'Could not open maps right now.');
+    } catch (error) {
+      Alert.alert('Maps', error?.message || 'Could not open maps right now.');
     }
   };
 
@@ -278,8 +446,24 @@ const ReportItemScreen = () => {
     ]);
   };
 
+  const saveDraftNow = async () => {
+    setBusyAction('saveDraft');
+    try {
+      await storageService.setJSON(storageService.keys.LAST_REPORT_DRAFT, form);
+      Alert.alert('Draft saved', 'Your report draft is saved on this device.');
+    } finally {
+      setBusyAction('');
+    }
+  };
+
   const onSubmit = async () => {
-    const validationError = validateReport(form);
+    const computedTitle =
+      form.title.trim() ||
+      (form.category === OTHER_CATEGORY && form.otherItemName.trim()
+        ? buildAutoTitle(form.status, form.otherItemName)
+        : '');
+
+    const validationError = validateReport({ ...form, title: computedTitle });
     if (validationError) {
       Alert.alert('Validation', validationError);
       return;
@@ -290,21 +474,30 @@ const ReportItemScreen = () => {
       return;
     }
 
+    const descriptionBase = form.description.trim();
+    const hasLastSeenText = /last seen:/i.test(descriptionBase);
+    const decoratedDescription =
+      form.lastSeenHint && !hasLastSeenText
+        ? `${descriptionBase}\nLast seen: ${form.lastSeenHint}.`
+        : descriptionBase;
+
     const normalizedForm = {
       ...form,
-      title: form.title.trim(),
-      description: form.description.trim(),
+      title: computedTitle,
+      description: decoratedDescription,
       campus: form.campus.trim(),
       category: form.category.trim(),
       locationText: form.locationText.trim(),
     };
 
+    const { otherItemName, ...payloadForm } = normalizedForm;
+
     setSubmitting(true);
     setBusyAction('submit');
     try {
       await createReport({
-        ...normalizedForm,
-        imageUrl: normalizedForm.imageUrl || generateItemImageUrl(normalizedForm),
+        ...payloadForm,
+        imageUrl: payloadForm.imageUrl || generateItemImageUrl(payloadForm),
         reportedBy: user._id,
       });
       skipNextDraftPersist.current = true;
@@ -374,13 +567,40 @@ const ReportItemScreen = () => {
             })}
           </View>
 
+          <Text style={styles.sectionLabel}>Smart Templates</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.templateRow}
+          >
+            {TEMPLATE_PRESETS.map((template) => {
+              const active = form.category === template.category;
+              return (
+                <Pressable
+                  key={template.key}
+                  style={[styles.templateChip, active && styles.templateChipActive]}
+                  onPress={() => applyTemplate(template)}
+                >
+                  <Text style={[styles.templateChipText, active && styles.templateChipTextActive]}>
+                    {template.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+          <Text style={styles.templateHint}>Tap once to prefill title and details, then edit as needed.</Text>
+
           <View style={styles.inputHeader}>
             <Text style={styles.sectionLabel}>Title</Text>
             <Text style={styles.counterText}>{form.title.length}/{TITLE_MAX}</Text>
           </View>
           <TextInput
             style={styles.input}
-            placeholder="Example: Black Samsung phone near Library"
+            placeholder={
+              form.category === OTHER_CATEGORY
+                ? 'Auto-filled from Item Name, or type your own title'
+                : 'Example: Black Samsung phone near Library'
+            }
             placeholderTextColor="#6a7f86"
             value={form.title}
             onChangeText={(title) => updateForm({ title })}
@@ -413,6 +633,24 @@ const ReportItemScreen = () => {
             ))}
           </View>
 
+          {form.category === OTHER_CATEGORY && (
+            <>
+              <View style={styles.inputHeader}>
+                <Text style={styles.sectionLabel}>Item Name (Other)</Text>
+                <Text style={styles.counterText}>{form.otherItemName.length}/{ITEM_NAME_MAX}</Text>
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Example: Water bottle, calculator, jacket"
+                placeholderTextColor="#6a7f86"
+                value={form.otherItemName}
+                onChangeText={onOtherItemNameChange}
+                maxLength={ITEM_NAME_MAX}
+              />
+              <Text style={styles.helperText}>When category is Other, item name auto-fills the title.</Text>
+            </>
+          )}
+
           <Text style={styles.sectionLabel}>Campus</Text>
           <View style={styles.chipsWrap}>
             {CAMPUSES.map((campus) => (
@@ -437,6 +675,18 @@ const ReportItemScreen = () => {
             onChangeText={(locationText) => updateForm({ locationText })}
             maxLength={LOCATION_MAX}
           />
+
+          <Text style={styles.sectionLabel}>Last Seen Time</Text>
+          <View style={styles.chipsWrap}>
+            {LAST_SEEN_OPTIONS.map((option) => (
+              <Chip
+                key={option}
+                label={option}
+                selected={form.lastSeenHint === option}
+                onPress={() => updateForm({ lastSeenHint: option })}
+              />
+            ))}
+          </View>
 
           <View style={styles.actionRow}>
             <ActionButton
@@ -481,10 +731,20 @@ const ReportItemScreen = () => {
               onPress={clearDraft}
               disabled={isBusy && busyAction !== 'clearDraft'}
             />
+            <ActionButton
+              label="Save Draft"
+              iconName="content-save-outline"
+              loading={busyAction === 'saveDraft'}
+              onPress={saveDraftNow}
+              disabled={isBusy && busyAction !== 'saveDraft'}
+            />
+          </View>
+
+          <View style={styles.actionRow}>
             {Boolean(form.imageUrl) ? (
               <ActionButton
                 label="Remove Photo"
-                iconName="image-remove-outline"
+                iconName="image-remove"
                 tone="danger"
                 loading={false}
                 onPress={() => updateForm({ imageUrl: '' })}
@@ -512,6 +772,11 @@ const ReportItemScreen = () => {
             <Text style={styles.summaryLine}>
               <AppIcon name="tag-outline" size={13} color="#4d676d" /> Category: {form.category || 'Not selected'}
             </Text>
+            {form.category === OTHER_CATEGORY ? (
+              <Text style={styles.summaryLine}>
+                <AppIcon name="identifier" size={13} color="#4d676d" /> Item name: {form.otherItemName || 'Not added'}
+              </Text>
+            ) : null}
             <Text style={styles.summaryLine}>
               <AppIcon name="school-outline" size={13} color="#4d676d" /> Campus: {form.campus || 'Not selected'}
             </Text>
@@ -521,7 +786,30 @@ const ReportItemScreen = () => {
             <Text style={styles.summaryLine}>
               <AppIcon name="map-marker-outline" size={13} color="#4d676d" /> Location: {form.location || form.locationText.trim() ? 'Added' : 'Not added'}
             </Text>
+            <Text style={styles.summaryLine}>
+              <AppIcon name="clock-time-four-outline" size={13} color="#4d676d" /> Last seen: {form.lastSeenHint || 'Not selected'}
+            </Text>
           </View>
+
+          {similarReports.length > 0 && (
+            <View style={styles.similarCard}>
+              <View style={styles.similarTitleRow}>
+                <AppIcon name="timeline-text-outline" size={15} color="#214a54" />
+                <Text style={styles.similarTitle}>Potential Similar Reports</Text>
+              </View>
+              <Text style={styles.similarSubtitle}>
+                Review these reports to avoid duplicate posting and improve claim matching.
+              </Text>
+              {similarReports.map((entry) => (
+                <View key={entry._id} style={styles.similarRow}>
+                  <Text style={styles.similarRowTitle} numberOfLines={1}>{entry.title || 'Untitled report'}</Text>
+                  <Text style={styles.similarRowMeta} numberOfLines={1}>
+                    {(entry.status || 'unknown').toUpperCase()} | {entry.category || 'Other'} | {entry.campus || 'Campus'}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
 
           {Boolean(form.imageUrl) && (
             <View style={styles.previewWrap}>
@@ -606,6 +894,23 @@ const styles = StyleSheet.create({
   segmentInner: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   segmentText: { textTransform: 'uppercase', color: '#2a4d55', fontWeight: '700' },
   segmentTextActive: { color: '#fff' },
+  templateRow: { gap: 8, paddingBottom: 2 },
+  templateChip: {
+    borderWidth: 1,
+    borderColor: '#cad9de',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    backgroundColor: '#fff',
+  },
+  templateChipActive: {
+    borderColor: '#0b7285',
+    backgroundColor: '#e0f3f6',
+  },
+  templateChipText: { color: '#3f5b61', fontWeight: '700' },
+  templateChipTextActive: { color: '#095b6a' },
+  templateHint: { color: '#5c767d', marginTop: 6, marginBottom: 8, fontSize: 12, fontWeight: '600' },
+  helperText: { color: '#5c767d', marginTop: -6, marginBottom: 10, fontSize: 12, fontWeight: '600' },
   input: {
     borderWidth: 1,
     borderColor: '#d2dde1',
@@ -660,6 +965,28 @@ const styles = StyleSheet.create({
   summaryTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   summaryTitle: { color: '#204a54', fontWeight: '800' },
   summaryLine: { color: '#4d676d', fontSize: 12, marginBottom: 2 },
+  similarCard: {
+    borderWidth: 1,
+    borderColor: '#d3e2e6',
+    borderRadius: 10,
+    backgroundColor: '#f8fdff',
+    padding: 10,
+    marginBottom: 10,
+  },
+  similarTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  similarTitle: { color: '#204a54', fontWeight: '800' },
+  similarSubtitle: { marginTop: 4, marginBottom: 8, color: '#527077', fontSize: 12 },
+  similarRow: {
+    borderWidth: 1,
+    borderColor: '#d2e1e6',
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 8,
+    paddingVertical: 7,
+    marginBottom: 6,
+  },
+  similarRowTitle: { color: '#173b43', fontWeight: '700', fontSize: 13 },
+  similarRowMeta: { color: '#56747c', fontSize: 11, marginTop: 2 },
   previewWrap: {
     borderWidth: 1,
     borderColor: '#d3e2e6',

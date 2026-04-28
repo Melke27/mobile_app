@@ -239,50 +239,50 @@ All image paths:
 The Home screen is the discovery hub. Users see recent lost/found reports, quick actions, and visual highlights for faster browsing.
 
 ![Home Screen](docs/doc_image/home_page.jpg)
-Display Note: Primary mobile feed layout with quick visual scan for lost/found posts.
+Display Note: This primary home display highlights mobile-first feed scanning, allowing users to identify item type, urgency, and relevance quickly with minimal taps.
 ![Home Screen Variant](docs/doc_image/home_page1.jpg)
-Display Note: Alternate feed state showing continuous image-driven browsing experience.
+Display Note: This alternate home variation demonstrates continuous, image-led browsing behavior that helps users stay engaged while comparing multiple item cards.
 
 ### Login
 
 The Login screen provides secure access to reporting, chat, saved items, and recovery actions for authenticated users.
 
 ![Login Screen](docs/doc_image/login.jpg)
-Display Note: Secure sign-in entry point for protected mobile features.
+Display Note: This login display represents the secure gateway into protected workflows, including reporting, messaging, saved items, and verification tools.
 
 ### Reports
 
 The Report flow helps users submit complete and trusted reports using structured fields, location details, and image attachment.
 
 ![Report Item Screen](docs/doc_image/report_item.jpg)
-Display Note: Main report composer with structured inputs and validation guidance.
+Display Note: This reporting display shows the structured composer used to improve data quality through guided inputs, validation checks, and clearer submission readiness.
 ![Lost Form](docs/doc_image/lost_form.jpg)
-Display Note: Lost-item focused form state with recovery/safety metadata fields.
+Display Note: This lost-item form display emphasizes safer recovery through ownership-proof hints, urgency selection, and explicit meetup guidance metadata.
 ![Lost and Found Form](docs/doc_image/lost-found-form.jpg)
-Display Note: Shared form template for both lost and found scenarios.
+Display Note: This unified template display demonstrates how one form supports both lost and found cases while dynamically adapting field intent by status.
 
 ### Search
 
 The Search and found-items view supports quick filtering and matching to reduce recovery time.
 
 ![Found Items Or Search](docs/doc_image/found-items-search.jpg)
-Display Note: Search/filter screen optimized for fast match discovery.
+Display Note: This search display is optimized for fast match discovery using filter narrowing, keyword relevance, and quick-access result scanning.
 
 ### Account
 
 The Account area manages user profile, preferences, and personal activity context, including dark-mode experience.
 
 ![Account Screen](docs/doc_image/account.jpg)
-Display Note: User profile and settings hub for account-level actions.
+Display Note: This account display functions as the user control center, combining profile information, preferences, and session-level settings in one place.
 ![Dark Mode Account](docs/doc_image/darkmode_account.jpg)
-Display Note: Dark-theme account presentation for readability in low-light use.
+Display Note: This dark-mode account display improves low-light usability with stronger visual comfort, contrast balance, and consistent component hierarchy.
 
 ### Alerts
 
 The Alerts screen surfaces important updates such as match events and moderation/recovery-related notifications.
 
 ![Alerts Screen](docs/doc_image/alerts.jpg)
-Display Note: Notification timeline for match, moderation, and recovery updates.
+Display Note: This alerts display presents an event timeline that prioritizes match, moderation, and recovery signals so users can take timely next actions.
 
 ## Detailed Per-Image Notes
 

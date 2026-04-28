@@ -210,7 +210,7 @@ How it works: User submits credentials, app requests token, then authenticated f
 Architecture path: `LoginScreen` -> `AuthContext.login` -> `authService` -> backend auth controller -> `User` model.
 
 UI/UX use: focused form layout, clear call-to-action, and immediate access change after success.
-Display Note: Sign-in entry state used before users access protected workflows.
+Display Note: This sign-in display represents the controlled entry state required before users can access protected workflows like report creation, chat, and verification.
 
 ![Login Screen](./doc_image/login.jpg)
 
@@ -221,7 +221,7 @@ How it works: Feed loads latest reports with visual emphasis and quick discovery
 Architecture path: `HomeScreen` -> `ItemsContext.fetchItems` -> `itemService.list` -> item list controller -> `Item` model.
 
 UI/UX use: high-scan card layout, priority visibility, and motion-driven engagement.
-Display Note: Feed-first home display for fast report discovery.
+Display Note: This home display is feed-first by design, enabling rapid report discovery through high-visibility cards and immediate interaction affordances.
 
 ![Home Screen](./doc_image/home_page.jpg)
 
@@ -232,7 +232,7 @@ How it works: Alternate home-state rendering shows additional feed visual behavi
 Architecture path: same data pipeline as home feed (`HomeScreen` + `ItemsContext` + list API).
 
 UI/UX use: reinforces continuity with image timing/animation and stronger browsing rhythm.
-Display Note: Alternate home display variant for visual engagement.
+Display Note: This alternate home display variant demonstrates visual engagement strategy with continuity-focused transitions and sustained browsing flow.
 
 ![Home Screen Variant](./doc_image/home_page1.jpg)
 
@@ -243,7 +243,7 @@ How it works: User enters report details, attaches image/location, and posts to 
 Architecture path: `ReportItemScreen` -> `ItemsContext.createReport` -> `itemService.create` -> create item controller -> `Item` model.
 
 UI/UX use: structured sections, validation-first flow, and progress clarity before submit.
-Display Note: Core reporting display with guided completion structure.
+Display Note: This core report display presents guided completion structure so users can submit richer, more reliable data with fewer mistakes.
 
 ![Report Item Screen](./doc_image/report_item.jpg)
 
@@ -254,7 +254,7 @@ How it works: Lost-item scenario focuses on detailed identification and recovery
 Architecture path: same create pipeline; includes enhanced fields (`lastSeenHint`, `urgency`, `proofHint`, `safeMeetupSpot`, `rewardOffer`).
 
 UI/UX use: chips + bounded inputs reduce confusion and improve report quality.
-Display Note: Lost-item focused display for safer claim/recovery details.
+Display Note: This lost-item display emphasizes safer claim and recovery handling by foregrounding proof requirements, urgency, and meetup planning.
 
 ![Lost Form](./doc_image/lost_form.jpg)
 
@@ -265,7 +265,7 @@ How it works: Shared form supports both lost and found reports through status-dr
 Architecture path: `ReportItemScreen` status state toggles payload mapping before `itemService.create`.
 
 UI/UX use: single reusable flow reduces complexity while keeping context-specific guidance.
-Display Note: Unified lost/found display template with status-based behavior.
+Display Note: This unified template display shows status-based behavior changes that keep one form reusable while preserving scenario-specific clarity.
 
 ![Lost and Found Form](./doc_image/lost-found-form.jpg)
 
@@ -276,7 +276,7 @@ How it works: User searches and filters to find likely matches by category/campu
 Architecture path: `SearchScreen` + filter controls -> `itemService.list(query)` -> list controller query builder -> `Item` model.
 
 UI/UX use: filter-driven narrowing supports faster decision-making and reduced scan time.
-Display Note: Search-result display built for quick match narrowing.
+Display Note: This search-result display is built for quick match narrowing through compact filtering patterns and high-signal item summaries.
 
 ![Found Items Or Search](./doc_image/found-items-search.jpg)
 
@@ -287,7 +287,7 @@ How it works: User manages profile/account-level settings and accesses personal 
 Architecture path: `AccountScreen` -> `AuthContext` and local settings services/storage.
 
 UI/UX use: personal control center pattern with grouped actions and predictable placements.
-Display Note: Account display for profile and user preference controls.
+Display Note: This account display centralizes profile and preference controls to give users predictable management of personal settings and identity context.
 
 ![Account Screen](./doc_image/account.jpg)
 
@@ -298,7 +298,7 @@ How it works: Same account workflow under dark theme for low-light readability.
 Architecture path: `ThemeContext` toggles palette; screen consumes themed colors.
 
 UI/UX use: contrast-aware dark mode improves comfort and visual accessibility.
-Display Note: Dark-mode account display for low-light readability.
+Display Note: This dark-mode account display improves low-light readability with contrast tuning and consistent visual hierarchy across controls.
 
 ![Dark Mode Account](./doc_image/darkmode_account.jpg)
 
@@ -309,7 +309,7 @@ How it works: Notification feed shows match/moderation/recovery-related events.
 Architecture path: `NotificationsScreen` -> notification service/context -> backend notification endpoints -> `Notification` model.
 
 UI/UX use: chronological updates with clear emphasis on actionable items.
-Display Note: Alert display showing event-driven updates and next actions.
+Display Note: This alert display communicates event-driven updates and directs users toward timely next actions in the recovery lifecycle.
 
 ![Alerts Screen](./doc_image/alerts.jpg)
 

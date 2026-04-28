@@ -11,9 +11,9 @@ Architecture: `HomeScreen` + `ItemsContext` + `itemService.list` + backend item 
 UI/UX: Card-first visual hierarchy and motion support fast browsing.
 
 ![Home Screen](./doc_image/home_page.jpg)
-Display Note: Main feed with quick-scan cards and action-ready item discovery.
+Display Note: This main feed display demonstrates quick-scan card design where users can rapidly evaluate item details and move directly into action flows.
 ![Home Screen Variant](./doc_image/home_page1.jpg)
-Display Note: Feed variant emphasizing visual continuity and browsing rhythm.
+Display Note: This feed variant display emphasizes visual continuity, helping users maintain browsing rhythm while reviewing multiple reports.
 
 ## Login
 
@@ -24,7 +24,7 @@ Architecture: `LoginScreen` + `AuthContext` + `authService` + auth API.
 UI/UX: Minimal form and clear action button to reduce login friction.
 
 ![Login Screen](./doc_image/login.jpg)
-Display Note: Authentication gateway for secure session-based usage.
+Display Note: This login display acts as the authentication gateway that establishes secure session access for all protected app capabilities.
 
 ## Report Flow
 
@@ -35,11 +35,11 @@ Architecture: `ReportItemScreen` + `ItemsContext.createReport` + item create API
 UI/UX: Guided sections, validation feedback, and confidence checks improve report quality.
 
 ![Report Item Screen](./doc_image/report_item.jpg)
-Display Note: High-quality report workflow with structured form guidance.
+Display Note: This report display highlights a high-quality submission workflow with guided sections, validation cues, and completion clarity.
 ![Lost Form](./doc_image/lost_form.jpg)
-Display Note: Lost-item state with identity and recovery safety emphasis.
+Display Note: This lost-form display focuses on identity confidence and recovery safety by capturing proof hints and controlled meetup context.
 ![Lost and Found Form](./doc_image/lost-found-form.jpg)
-Display Note: Combined template flow for lost and found report types.
+Display Note: This combined template display shows a reusable flow that cleanly adapts to both lost and found report scenarios.
 
 ## Search / Found Items
 
@@ -50,7 +50,7 @@ Architecture: `SearchScreen` + query filters + `itemService.list(query)` + list 
 UI/UX: Search narrowing and scan-friendly rows reduce effort and time.
 
 ![Found Items Or Search](./doc_image/found-items-search.jpg)
-Display Note: Filter-based search results for faster potential-match discovery.
+Display Note: This search-result display demonstrates filter-based narrowing for faster potential-match discovery in high-volume item lists.
 
 ## Account
 
@@ -61,9 +61,9 @@ Architecture: `AccountScreen` + `AuthContext` + `ThemeContext` + local storage s
 UI/UX: Consistent settings layout in light/dark themes supports clarity and comfort.
 
 ![Account Screen](./doc_image/account.jpg)
-Display Note: Personal profile and settings center.
+Display Note: This account display serves as the personal profile and settings center for identity, preferences, and user-level controls.
 ![Dark Mode Account](./doc_image/darkmode_account.jpg)
-Display Note: Dark-mode profile experience for mobile comfort and contrast.
+Display Note: This dark-mode account display improves mobile comfort with contrast-aware typography and balanced visual emphasis.
 
 ## Alerts
 
@@ -74,4 +74,4 @@ Architecture: `NotificationsScreen` + notification service/API + `Notification` 
 UI/UX: Event-priority list keeps users focused on actions that matter most.
 
 ![Alerts Screen](./doc_image/alerts.jpg)
-Display Note: Chronological alerts stream with actionable status updates.
+Display Note: This alerts display shows a chronological event stream with clear, actionable status updates tied to recovery workflow progress.

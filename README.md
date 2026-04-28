@@ -220,14 +220,20 @@ All image paths:
 
 ### Home
 
+The Home screen is the discovery hub. Users see recent lost/found reports, quick actions, and visual highlights for faster browsing.
+
 ![Home Screen](docs/doc_image/home_page.jpg)
 ![Home Screen Variant](docs/doc_image/home_page1.jpg)
 
 ### Login
 
+The Login screen provides secure access to reporting, chat, saved items, and recovery actions for authenticated users.
+
 ![Login Screen](docs/doc_image/login.jpg)
 
 ### Reports
+
+The Report flow helps users submit complete and trusted reports using structured fields, location details, and image attachment.
 
 ![Report Item Screen](docs/doc_image/report_item.jpg)
 ![Lost Form](docs/doc_image/lost_form.jpg)
@@ -235,13 +241,19 @@ All image paths:
 
 ### Search
 
+The Search and found-items view supports quick filtering and matching to reduce recovery time.
+
 ![Found Items Or Search](docs/doc_image/found%20iteamsorsearchba.jpg)
 
 ### Account
+
+The Account area manages user profile, preferences, and personal activity context, including dark-mode experience.
 
 ![Account Screen](docs/doc_image/account.jpg)
 ![Dark Mode Account](docs/doc_image/darkmode_account.jpg)
 
 ### Alerts
+
+The Alerts screen surfaces important updates such as match events and moderation/recovery-related notifications.
 
 ![Alerts Screen](docs/doc_image/alerts.jpg)

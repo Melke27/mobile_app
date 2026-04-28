@@ -124,6 +124,56 @@ Preview gallery:
 
 - See [SCREEN_GALLERY.md](./SCREEN_GALLERY.md)
 
+## 6.1 Topic-Based Screens (Description + Image)
+
+### Login
+
+Purpose: authenticate users so they can create reports, chat with reporters, save items, and perform recovery actions.
+
+![Login Screen](./doc_image/login.jpg)
+
+### Home Feed
+
+Purpose: provide the main discovery experience with recent reports, quick navigation, and visual scanning of urgent posts.
+
+![Home Screen](./doc_image/home_page.jpg)
+![Home Screen Variant](./doc_image/home_page1.jpg)
+
+### Report Creation
+
+Purpose: collect high-quality lost/found data with structured fields and safety-driven details.
+
+Included UX inputs:
+
+- last-seen hint
+- urgency level
+- ownership proof hint
+- safe meetup spot
+- optional reward (lost reports)
+
+![Report Item Screen](./doc_image/report_item.jpg)
+![Lost Form](./doc_image/lost_form.jpg)
+![Lost and Found Form](./doc_image/lost%20and%20found%20form.jpg)
+
+### Search and Found Items
+
+Purpose: help users quickly locate matching reports using filtered lists and search-friendly UI.
+
+![Found Items Or Search](./doc_image/found%20iteamsorsearchba.jpg)
+
+### Account and Personalization
+
+Purpose: central place for user identity, settings, and profile-level controls in both light/dark visual modes.
+
+![Account Screen](./doc_image/account.jpg)
+![Dark Mode Account](./doc_image/darkmode_account.jpg)
+
+### Alerts and Notifications
+
+Purpose: keep users informed about match updates, moderation outcomes, and report lifecycle events.
+
+![Alerts Screen](./doc_image/alerts.jpg)
+
 ## 7. API and Technical References
 
 - [API_SPEC.md](./API_SPEC.md)

@@ -202,3 +202,46 @@ For demo/setup convenience, the first registered account becomes `admin`.
 All documentation screenshots are stored in:
 
 - `docs/doc_image/`
+
+All image paths:
+
+- `docs/doc_image/account.jpg`
+- `docs/doc_image/alerts.jpg`
+- `docs/doc_image/darkmode_account.jpg`
+- `docs/doc_image/found iteamsorsearchba.jpg`
+- `docs/doc_image/home_page.jpg`
+- `docs/doc_image/home_page1.jpg`
+- `docs/doc_image/login.jpg`
+- `docs/doc_image/lost and found form.jpg`
+- `docs/doc_image/lost_form.jpg`
+- `docs/doc_image/report_item.jpg`
+
+## Main Screenshot Preview
+
+### Home
+
+![Home Screen](docs/doc_image/home_page.jpg)
+![Home Screen Variant](docs/doc_image/home_page1.jpg)
+
+### Login
+
+![Login Screen](docs/doc_image/login.jpg)
+
+### Reports
+
+![Report Item Screen](docs/doc_image/report_item.jpg)
+![Lost Form](docs/doc_image/lost_form.jpg)
+![Lost and Found Form](docs/doc_image/lost%20and%20found%20form.jpg)
+
+### Search
+
+![Found Items Or Search](docs/doc_image/found%20iteamsorsearchba.jpg)
+
+### Account
+
+![Account Screen](docs/doc_image/account.jpg)
+![Dark Mode Account](docs/doc_image/darkmode_account.jpg)
+
+### Alerts
+
+![Alerts Screen](docs/doc_image/alerts.jpg)

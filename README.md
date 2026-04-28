@@ -257,3 +257,10 @@ The Account area manages user profile, preferences, and personal activity contex
 The Alerts screen surfaces important updates such as match events and moderation/recovery-related notifications.
 
 ![Alerts Screen](docs/doc_image/alerts.jpg)
+
+## Detailed Per-Image Notes
+
+For full notes on how each screenshot works, architecture flow, and UI/UX intent, see:
+
+- [Product Documentation](docs/PRODUCT_DOCUMENTATION.md) (`Per-Image Notes` section)
+- [Screen Gallery](docs/SCREEN_GALLERY.md)

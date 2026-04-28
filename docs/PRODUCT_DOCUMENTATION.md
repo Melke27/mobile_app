@@ -101,7 +101,26 @@ These work together to improve safety, reduce fake claims, and speed up successf
   - mark recovered
   - open safe meetup map
 
-## 6. Screenshot Paths (`docs/doc_image`)
+## 6. System Architecture (How Features Flow)
+
+Architecture layers:
+
+- Presentation Layer: React Native screens/components (`src/screens`, `src/components`)
+- State Layer: React contexts (`AuthContext`, `ItemsContext`, `ThemeContext`)
+- Service Layer: API and device services (`src/services`)
+- API Layer: Express controllers/routes (`server/src/controllers`, `server/src/routes`)
+- Data Layer: MongoDB models (`server/src/models`)
+
+Core request flow:
+
+1. User action on a screen triggers UI handlers.
+2. Screen calls context function or service method.
+3. Service sends REST request via `apiClient`.
+4. Express controller validates and processes the request.
+5. MongoDB model persists or retrieves data.
+6. Response returns to mobile UI and updates screen state.
+
+## 7. Screenshot Paths (`docs/doc_image`)
 
 All screenshots are stored in:
 
@@ -124,7 +143,7 @@ Preview gallery:
 
 - See [SCREEN_GALLERY.md](./SCREEN_GALLERY.md)
 
-## 6.1 Topic-Based Screens (Description + Image)
+## 7.1 Topic-Based Screens (Description + Image)
 
 ### Login
 
@@ -174,7 +193,109 @@ Purpose: keep users informed about match updates, moderation outcomes, and repor
 
 ![Alerts Screen](./doc_image/alerts.jpg)
 
-## 7. API and Technical References
+## 7.2 Per-Image Notes (How It Works + Architecture + UI/UX)
+
+### `docs/doc_image/login.jpg`
+
+How it works: User submits credentials, app requests token, then authenticated features unlock.
+
+Architecture path: `LoginScreen` -> `AuthContext.login` -> `authService` -> backend auth controller -> `User` model.
+
+UI/UX use: focused form layout, clear call-to-action, and immediate access change after success.
+
+![Login Screen](./doc_image/login.jpg)
+
+### `docs/doc_image/home_page.jpg`
+
+How it works: Feed loads latest reports with visual emphasis and quick discovery interactions.
+
+Architecture path: `HomeScreen` -> `ItemsContext.fetchItems` -> `itemService.list` -> item list controller -> `Item` model.
+
+UI/UX use: high-scan card layout, priority visibility, and motion-driven engagement.
+
+![Home Screen](./doc_image/home_page.jpg)
+
+### `docs/doc_image/home_page1.jpg`
+
+How it works: Alternate home-state rendering shows additional feed visual behavior and transitions.
+
+Architecture path: same data pipeline as home feed (`HomeScreen` + `ItemsContext` + list API).
+
+UI/UX use: reinforces continuity with image timing/animation and stronger browsing rhythm.
+
+![Home Screen Variant](./doc_image/home_page1.jpg)
+
+### `docs/doc_image/report_item.jpg`
+
+How it works: User enters report details, attaches image/location, and posts to backend.
+
+Architecture path: `ReportItemScreen` -> `ItemsContext.createReport` -> `itemService.create` -> create item controller -> `Item` model.
+
+UI/UX use: structured sections, validation-first flow, and progress clarity before submit.
+
+![Report Item Screen](./doc_image/report_item.jpg)
+
+### `docs/doc_image/lost_form.jpg`
+
+How it works: Lost-item scenario focuses on detailed identification and recovery safety data.
+
+Architecture path: same create pipeline; includes enhanced fields (`lastSeenHint`, `urgency`, `proofHint`, `safeMeetupSpot`, `rewardOffer`).
+
+UI/UX use: chips + bounded inputs reduce confusion and improve report quality.
+
+![Lost Form](./doc_image/lost_form.jpg)
+
+### `docs/doc_image/lost and found form.jpg`
+
+How it works: Shared form supports both lost and found reports through status-driven field behavior.
+
+Architecture path: `ReportItemScreen` status state toggles payload mapping before `itemService.create`.
+
+UI/UX use: single reusable flow reduces complexity while keeping context-specific guidance.
+
+![Lost and Found Form](./doc_image/lost%20and%20found%20form.jpg)
+
+### `docs/doc_image/found iteamsorsearchba.jpg`
+
+How it works: User searches and filters to find likely matches by category/campus/keywords.
+
+Architecture path: `SearchScreen` + filter controls -> `itemService.list(query)` -> list controller query builder -> `Item` model.
+
+UI/UX use: filter-driven narrowing supports faster decision-making and reduced scan time.
+
+![Found Items Or Search](./doc_image/found%20iteamsorsearchba.jpg)
+
+### `docs/doc_image/account.jpg`
+
+How it works: User manages profile/account-level settings and accesses personal tools.
+
+Architecture path: `AccountScreen` -> `AuthContext` and local settings services/storage.
+
+UI/UX use: personal control center pattern with grouped actions and predictable placements.
+
+![Account Screen](./doc_image/account.jpg)
+
+### `docs/doc_image/darkmode_account.jpg`
+
+How it works: Same account workflow under dark theme for low-light readability.
+
+Architecture path: `ThemeContext` toggles palette; screen consumes themed colors.
+
+UI/UX use: contrast-aware dark mode improves comfort and visual accessibility.
+
+![Dark Mode Account](./doc_image/darkmode_account.jpg)
+
+### `docs/doc_image/alerts.jpg`
+
+How it works: Notification feed shows match/moderation/recovery-related events.
+
+Architecture path: `NotificationsScreen` -> notification service/context -> backend notification endpoints -> `Notification` model.
+
+UI/UX use: chronological updates with clear emphasis on actionable items.
+
+![Alerts Screen](./doc_image/alerts.jpg)
+
+## 8. API and Technical References
 
 - [API_SPEC.md](./API_SPEC.md)
 - [MONGODB_SCHEMA.md](./MONGODB_SCHEMA.md)
@@ -182,7 +303,7 @@ Purpose: keep users informed about match updates, moderation outcomes, and repor
 - [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 - [TEST_PLAN.md](./TEST_PLAN.md)
 
-## 8. Deployment and Visibility Notes
+## 9. Deployment and Visibility Notes
 
 To keep documentation visible on GitHub:
 

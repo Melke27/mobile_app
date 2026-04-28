@@ -23,3 +23,18 @@
 - Admin dashboard stats: Implemented
 - Chat auto-refresh polling: Implemented
 - Runtime permission handling (camera/location/notifications): Implemented
+- Last-seen hint in report flow: Implemented
+- Urgency tagging (low/normal/high): Implemented
+- Ownership proof hint for safer claim validation: Implemented
+- Safe meetup spot field and detail visibility: Implemented
+- Optional reward note for lost reports: Implemented
+- Duplicate report warning before submit: Implemented
+- Item detail safety snapshot (proof/meetup/reward): Implemented
+- Safe meetup quick map action: Implemented
+
+## UI/UX Enhancements
+
+- Bottom navigation simplified by removing duplicate entries where top navigation already exists.
+- Home feed visuals improved with stronger cards, richer motion, and image transitions.
+- Report screen upgraded with guided chips, counters, quality checks, and clearer submit readiness.
+- Item detail screen improved with action-priority cards and recovery safety context.

@@ -1,168 +1,95 @@
-# Lost and Found Mobile Application for Campus
+# Campus Lost & Found (Mobile + API)
 
-React Native + Node.js + MongoDB (Mobile Computing Focus)
+React Native mobile app with Node.js/Express API and MongoDB.
 
-## 1. Project Overview
+This project helps students and staff report lost/found items, search reports, chat, and recover items faster.
 
-The **Campus Lost & Found** application is a mobile-first system for students and staff to report, discover, and recover lost items quickly.
+## Tech Stack
 
-This project is built around mobile computing capabilities:
+- Mobile: React Native (`0.74.5`)
+- Backend: Node.js + Express
+- Database: MongoDB
+- Auth: JWT
 
-- Camera capture for item evidence
-- GPS tagging for precise report location
-- Real-time internet sync with central database
-- Push notification integration hook
-- Offline data caching for unstable networks
+## Core Features
 
-## 2. Main Objectives
+- Register/Login
+- Lost and found report creation (photo + location)
+- Search and filters
+- Item details + potential matches
+- Chat between users
+- Save/bookmark reports locally
+- Notification center (in-app)
+- Admin moderation and dashboard
+- Ownership verification token
 
-- Build an Android-ready React Native application
-- Integrate smartphone features (camera, GPS, local storage)
-- Provide real-time lost/found reporting and search
-- Use **MongoDB** as the central database
-- Improve communication with in-app chat and moderation
+## Prerequisites
 
-## 3. Mobile Computing Requirements (Grading-Critical)
+- Node.js 18+
+- npm
+- Android Studio + SDK
+- ADB (for physical phone install)
+- MongoDB Atlas (or local MongoDB)
 
-### Hardware
+## Quick Start
 
-- Android smartphone
-- Camera sensor
-- GPS sensor
-- Internet connectivity (Wi-Fi or mobile data)
-
-### Software
-
-- React Native
-- Node.js + Express
-- MongoDB (Atlas or local)
-- Android Studio
-- Visual Studio Code
-
-### Mobile Features Used
-
-- `react-native-image-picker` for camera capture
-- `@react-native-community/geolocation` for live coordinates
-- `@react-native-async-storage/async-storage` for offline cache + drafts
-- Notification token registration endpoint ready for FCM integration
-
-## 4. Problem Statement
-
-Campus users lose items such as phones, IDs, books, and keys. Manual reporting is slow and not centralized. Matching lost and found reports is difficult and inconsistent.
-
-This project solves that through:
-
-- centralized digital reporting
-- searchable, filterable reports
-- smart matching score engine
-- direct chat between reporter and finder
-
-## 5. Complete Feature Set
-
-### User Features
-
-- Register/Login with JWT authentication
-- Report Lost Item (photo + GPS + location text)
-- Report Found Item
-- Search and filter by status/campus/category/keyword/date
-- View item details and potential matches
-- Save/bookmark reports for quick access on device
-- Share item details from the app
-- Chat per item with other user
-- In-app notification center (match/chat/moderation alerts)
-- Mark item as recovered
-- Flag suspicious posts
-- QR ownership token generation for verification
-
-### Admin Features
-
-- View flagged reports
-- Remove spam/fake reports
-- Role-protected admin routes
-- Flag review actions (keep flagged / clear flag)
-- Dashboard stats (users, reports, status totals)
-
-### Advanced Features Added
-
-- Smart matching engine (text + category + campus + location)
-- Offline cache of latest reports
-- Draft auto-save for report form
-- Multi-campus data model support
-- Notification APIs (register token, list mine, mark read, mark all read)
-- Admin moderation workflow (keep flag, clear flag, delete report) + dashboard stats
-
-## 6. Architecture
-
-Client-Server Mobile Computing Model:
-
-```text
-[React Native App]
-      |
-      | HTTPS (JWT)
-      v
-[Node.js + Express API]
-      |
-      v
-[MongoDB Database]
-      |
-      +--> Matching Engine (server-side scoring)
-      +--> Admin Moderation Layer
-      +--> Notification Token Store (for FCM push pipeline)
-```
-
-## 7. Project Structure
-
-```text
-.
-├── App.js
-├── index.js
-├── src
-│   ├── components
-│   ├── config
-│   ├── context
-│   ├── navigation
-│   ├── screens
-│   ├── services
-│   └── utils
-├── server
-│   ├── .env.example
-│   ├── package.json
-│   └── src
-│       ├── config
-│       ├── controllers
-│       ├── middleware
-│       ├── models
-│       ├── routes
-│       └── utils
-└── docs
-```
-
-## 8. Quick Setup
-
-### 8.1 API Server (MongoDB)
+### 1) Install dependencies
 
 ```bash
-cd server
-npm install
-cp .env.example .env
-# edit .env and set your MongoDB URI + JWT secret
-npm run dev
-```
-
-Tip: open `http://localhost:5000/api/health` and confirm `authConfigured: true` before testing registration.
-
-### 8.2 Mobile App
-
-```bash
-cd ..
 npm install --legacy-peer-deps
-# ensure src/config/env.js points to your API URL
-npm start
-# in another terminal:
+npm --prefix server install
+```
+
+### 2) Configure backend
+
+```bash
+cp server/.env.example server/.env
+```
+
+Edit `server/.env`:
+
+- `MONGODB_URI`
+- `JWT_SECRET`
+
+Start backend:
+
+```bash
+npm run server:dev
+```
+
+Health check:
+
+- `http://localhost:5000/api/health`
+- Confirm `authConfigured: true`
+
+### 3) Configure mobile API base URL
+
+Edit `src/config/env.js`.
+
+Default repo config already uses hosted mode:
+
+- `DEV_BACKEND_MODE = 'hosted'`
+- `HOSTED_API_BASE_URL = 'https://mobile-app-ff7d.onrender.com/api'`
+
+## Run the Mobile App
+
+### Recommended: standalone release mode (no Metro required)
+
+```bash
 npm run android
 ```
 
-Physical phone over USB (maps both Metro `8081` and local API `5000`):
+This runs Android in release mode and behaves like a real installed app.
+
+### Debug mode (Metro + hot reload)
+
+```bash
+npm start
+# in another terminal
+npm run android:dev
+```
+
+### Physical phone debug via USB
 
 ```bash
 # terminal 1
@@ -171,110 +98,107 @@ npm start
 npm run android:usb
 ```
 
-If you have multiple devices connected (phone + emulator), target one device:
+If multiple devices are connected:
 
 ```bash
 ANDROID_SERIAL=<device-id> npm run android:usb:device
 ```
 
-Alternative development command (runs backend + Metro together):
-
-```bash
-npm run dev:all
-```
-
-Build APK files:
+## Build and Install APK
 
 ```bash
 npm run apk:debug
 npm run apk:release
+npm run install:phone:debug
+npm run install:phone
 ```
 
-If you install `app-debug.apk` manually, keep Metro running and run:
+APK output paths:
+
+- Debug: `android/app/build/outputs/apk/debug/app-debug.apk`
+- Release: `android/app/build/outputs/apk/release/app-release.apk`
+
+## Useful Scripts
+
+- `npm run start` - Start Metro
+- `npm run start:reset` - Start Metro with cache reset
+- `npm run android` - Run Android release build
+- `npm run android:dev` - Run Android debug build
+- `npm run server:dev` - Start backend in dev mode
+- `npm run server:start` - Start backend in normal mode
+- `npm run dev:all` - Start backend + Metro together
+- `npm run apk:release` - Build release APK
+- `npm run install:phone` - Install release APK to connected device
+
+## Troubleshooting
+
+### "Unable to load script" (red screen)
+
+You are running a debug build without Metro.
+
+Fix:
 
 ```bash
+npm start
 adb reverse tcp:8081 tcp:8081
 ```
 
-Note for Android emulator: default API URL is `http://10.0.2.2:5000/api`.
-Dev backend mode is controlled in `src/config/env.js`:
-- set `DEV_BACKEND_MODE = 'hosted'` for real-device usage without USB/local backend dependency (default in this repo)
-- set `DEV_BACKEND_MODE = 'auto'` for smart fallback (USB reverse -> emulator -> Wi-Fi phone -> hosted)
-- set `DEV_BACKEND_MODE = 'phone_wifi'` and update `LOCAL_PHONE_API_BASE_URL` for same-Wi-Fi phone testing
-- set `DEV_BACKEND_MODE = 'usb_reverse'` if you explicitly want local backend via USB
-
-Install standalone release APK (recommended for phone testing without USB/Metro):
+Or install standalone release build:
 
 ```bash
 npm run apk:release
-npm run install:phone:release
+npm run install:phone
 ```
 
-Admin note: the first registered account is automatically assigned `admin` role for easier project setup/demo.
+### `adb: more than one device/emulator`
 
-### 8.3 Android Compatibility (Pixel 8 / API 34)
+```bash
+ANDROID_SERIAL=<device-id> npm run android:usb:device
+```
 
-- Recommended emulator: **Pixel 8 API 34**
-- Required SDK tools in Android Studio:
-  - Android SDK Platform 34
-  - Build-Tools 34.0.0
-  - Platform-Tools
-  - Android Emulator
-  - NDK (Side by side) `26.1.10909125`
-- If NDK is corrupted, remove and reinstall:
-  - `rm -rf $HOME/Android/Sdk/ndk/26.1.10909125`
+### App cannot reach backend
 
-## 9. Core Screens Implemented
+- Check `server/.env` values
+- Check backend health endpoint
+- Check `src/config/env.js` mode and URL
 
-- `LoginScreen`
-- `RegisterScreen`
-- `HomeScreen`
-- `ReportItemScreen`
-- `SearchScreen`
-- `SavedItemsScreen`
-- `ItemDetailScreen`
-- `ChatScreen`
-- `NotificationsScreen`
-- `VerificationScreen`
-- `AdminDashboardScreen`
+### First account admin role
 
-## 10. MongoDB Collections
+For demo/setup convenience, the first registered account becomes `admin`.
 
-- `users`
-- `items`
-- `messages`
-- `notificationtokens`
-- `notifications`
+## Project Structure
 
-Detailed schema is available in [MONGODB_SCHEMA.md](docs/MONGODB_SCHEMA.md).
+```text
+.
+├── App.js
+├── src/
+│   ├── components/
+│   ├── config/
+│   ├── context/
+│   ├── navigation/
+│   ├── screens/
+│   ├── services/
+│   └── utils/
+├── server/
+│   ├── src/
+│   └── .env.example
+└── docs/
+```
 
-## 11. Security Implementation
+## Documentation Index
 
-- Password hashing with `bcryptjs`
-- JWT access token authentication
-- Protected routes with middleware
-- Admin-only endpoints for moderation
-- Input checks and validation constraints in controllers/models
+- [Product Documentation](docs/PRODUCT_DOCUMENTATION.md)
+- [Screen Gallery](docs/SCREEN_GALLERY.md)
+- [Deployment Guide](docs/DEPLOYMENT_GUIDE.md)
+- [API Specification](docs/API_SPEC.md)
+- [MongoDB Schema](docs/MONGODB_SCHEMA.md)
+- [Feature Matrix](docs/FEATURE_MATRIX.md)
+- [Test Plan](docs/TEST_PLAN.md)
+- [UML Text](docs/UML_TEXT.md)
+- [Submission Checklist](docs/SUBMISSION_CHECKLIST.md)
 
-## 12. Testing Scope
+## Screenshot Assets Path
 
-- API route tests (auth/items/chat/admin)
-- Mobile component tests (forms/navigation)
-- Integration flow tests (report -> match -> chat -> recovered)
-- Device tests for camera and GPS permission handling
+All documentation screenshots are stored in:
 
-Detailed plan: [TEST_PLAN.md](docs/TEST_PLAN.md)
-
-## 13. Documentation Index
-
-- [API_SPEC.md](docs/API_SPEC.md)
-- [MONGODB_SCHEMA.md](docs/MONGODB_SCHEMA.md)
-- [DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)
-- [FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md)
-- [TEST_PLAN.md](docs/TEST_PLAN.md)
-- [UML_TEXT.md](docs/UML_TEXT.md)
-- [SUBMISSION_CHECKLIST.md](docs/SUBMISSION_CHECKLIST.md)
-
-## 14. Conclusion
-
-This version is a complete and clear **React Native + MongoDB** project package for a campus mobile computing assignment. It covers required device capabilities, real-time reporting workflow, secure backend design, and advanced features suitable for final project evaluation.
+- `docs/doc_image/`

@@ -23,6 +23,16 @@ This project helps students and staff report lost/found items, search reports, c
 - Admin moderation and dashboard
 - Ownership verification token
 
+## Architecture Overview
+
+- Mobile UI layer: React Native screens and reusable components
+- State layer: `AuthContext`, `ItemsContext`, and `ThemeContext`
+- Service layer: API/device helpers in `src/services`
+- Backend API: Express controllers and routes
+- Data layer: MongoDB models
+
+Flow: `Screen Action -> Context/Service -> API Client -> Express Controller -> MongoDB -> Response -> UI Update`
+
 ## Prerequisites
 
 - Node.js 18+
@@ -208,11 +218,11 @@ All image paths:
 - `docs/doc_image/account.jpg`
 - `docs/doc_image/alerts.jpg`
 - `docs/doc_image/darkmode_account.jpg`
-- `docs/doc_image/found iteamsorsearchba.jpg`
+- `docs/doc_image/found-items-search.jpg`
 - `docs/doc_image/home_page.jpg`
 - `docs/doc_image/home_page1.jpg`
 - `docs/doc_image/login.jpg`
-- `docs/doc_image/lost and found form.jpg`
+- `docs/doc_image/lost-found-form.jpg`
 - `docs/doc_image/lost_form.jpg`
 - `docs/doc_image/report_item.jpg`
 
@@ -237,13 +247,13 @@ The Report flow helps users submit complete and trusted reports using structured
 
 ![Report Item Screen](docs/doc_image/report_item.jpg)
 ![Lost Form](docs/doc_image/lost_form.jpg)
-![Lost and Found Form](docs/doc_image/lost%20and%20found%20form.jpg)
+![Lost and Found Form](docs/doc_image/lost-found-form.jpg)
 
 ### Search
 
 The Search and found-items view supports quick filtering and matching to reduce recovery time.
 
-![Found Items Or Search](docs/doc_image/found%20iteamsorsearchba.jpg)
+![Found Items Or Search](docs/doc_image/found-items-search.jpg)
 
 ### Account
 

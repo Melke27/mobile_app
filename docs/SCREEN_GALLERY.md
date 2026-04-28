@@ -33,7 +33,7 @@ UI/UX: Guided sections, validation feedback, and confidence checks improve repor
 
 ![Report Item Screen](./doc_image/report_item.jpg)
 ![Lost Form](./doc_image/lost_form.jpg)
-![Lost and Found Form](./doc_image/lost%20and%20found%20form.jpg)
+![Lost and Found Form](./doc_image/lost-found-form.jpg)
 
 ## Search / Found Items
 
@@ -43,7 +43,7 @@ Architecture: `SearchScreen` + query filters + `itemService.list(query)` + list 
 
 UI/UX: Search narrowing and scan-friendly rows reduce effort and time.
 
-![Found Items Or Search](./doc_image/found%20iteamsorsearchba.jpg)
+![Found Items Or Search](./doc_image/found-items-search.jpg)
 
 ## Account
 

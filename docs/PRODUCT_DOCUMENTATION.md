@@ -133,8 +133,8 @@ Direct paths:
 - `docs/doc_image/login.jpg`
 - `docs/doc_image/report_item.jpg`
 - `docs/doc_image/lost_form.jpg`
-- `docs/doc_image/lost and found form.jpg`
-- `docs/doc_image/found iteamsorsearchba.jpg`
+- `docs/doc_image/lost-found-form.jpg`
+- `docs/doc_image/found-items-search.jpg`
 - `docs/doc_image/account.jpg`
 - `docs/doc_image/darkmode_account.jpg`
 - `docs/doc_image/alerts.jpg`
@@ -172,13 +172,13 @@ Included UX inputs:
 
 ![Report Item Screen](./doc_image/report_item.jpg)
 ![Lost Form](./doc_image/lost_form.jpg)
-![Lost and Found Form](./doc_image/lost%20and%20found%20form.jpg)
+![Lost and Found Form](./doc_image/lost-found-form.jpg)
 
 ### Search and Found Items
 
 Purpose: help users quickly locate matching reports using filtered lists and search-friendly UI.
 
-![Found Items Or Search](./doc_image/found%20iteamsorsearchba.jpg)
+![Found Items Or Search](./doc_image/found-items-search.jpg)
 
 ### Account and Personalization
 
@@ -245,7 +245,7 @@ UI/UX use: chips + bounded inputs reduce confusion and improve report quality.
 
 ![Lost Form](./doc_image/lost_form.jpg)
 
-### `docs/doc_image/lost and found form.jpg`
+### `docs/doc_image/lost-found-form.jpg`
 
 How it works: Shared form supports both lost and found reports through status-driven field behavior.
 
@@ -253,9 +253,9 @@ Architecture path: `ReportItemScreen` status state toggles payload mapping befor
 
 UI/UX use: single reusable flow reduces complexity while keeping context-specific guidance.
 
-![Lost and Found Form](./doc_image/lost%20and%20found%20form.jpg)
+![Lost and Found Form](./doc_image/lost-found-form.jpg)
 
-### `docs/doc_image/found iteamsorsearchba.jpg`
+### `docs/doc_image/found-items-search.jpg`
 
 How it works: User searches and filters to find likely matches by category/campus/keywords.
 
@@ -263,7 +263,7 @@ Architecture path: `SearchScreen` + filter controls -> `itemService.list(query)`
 
 UI/UX use: filter-driven narrowing supports faster decision-making and reduced scan time.
 
-![Found Items Or Search](./doc_image/found%20iteamsorsearchba.jpg)
+![Found Items Or Search](./doc_image/found-items-search.jpg)
 
 ### `docs/doc_image/account.jpg`
 

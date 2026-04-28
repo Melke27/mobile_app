@@ -38,3 +38,10 @@
 - Home feed visuals improved with stronger cards, richer motion, and image transitions.
 - Report screen upgraded with guided chips, counters, quality checks, and clearer submit readiness.
 - Item detail screen improved with action-priority cards and recovery safety context.
+
+## Mobile Computing Outcomes
+
+- Runtime permission handling integrated for camera, location, and notifications.
+- Network-mode flexibility supported (`hosted`, `usb_reverse`, `emulator`, `phone_wifi`).
+- Local persistence used for report drafts and saved-item continuity.
+- Mobile-safe report workflow improved for low-connectivity and interrupted sessions.

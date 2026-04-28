@@ -18,10 +18,14 @@
 - Local storage used: `src/services/storageService.js`
 - Real-time internet API sync used: `src/services/apiClient.js`
 - Push-notification pipeline hook used: `src/services/notificationService.js`
+- Permission-gated runtime flows used: `src/services/permissionsService.js`
+- Offline-friendly draft recovery used: `storageService.keys.LAST_REPORT_DRAFT`
+- Mobile UI state resilience used: context-driven auth/items/theme layers
 
 ## Documentation Package
 
 - README overview and setup guide
+- Product documentation with architecture and per-image display notes
 - API specification
 - MongoDB schema documentation
 - Feature matrix

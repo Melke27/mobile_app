@@ -20,6 +20,11 @@
 - `category: String`
 - `campus: String`
 - `locationText: String`
+- `lastSeenHint: String`
+- `urgency: String (low|normal|high)`
+- `proofHint: String`
+- `safeMeetupSpot: String`
+- `rewardOffer: String`
 - `location.latitude: Number`
 - `location.longitude: Number`
 - `location.accuracy: Number`

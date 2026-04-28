@@ -33,6 +33,12 @@ This project helps students and staff report lost/found items, search reports, c
 
 Flow: `Screen Action -> Context/Service -> API Client -> Express Controller -> MongoDB -> Response -> UI Update`
 
+## Mobile Computing Project Notes
+
+- This project is designed for mobile-first constraints: unstable networks, runtime permissions, and device-resource limits.
+- The app uses local persistence for draft/saved continuity and API synchronization for real-time updates.
+- UX flow prioritizes short actions, clear feedback, and safe recovery handoff behavior.
+
 ## Prerequisites
 
 - Node.js 18+
@@ -233,40 +239,50 @@ All image paths:
 The Home screen is the discovery hub. Users see recent lost/found reports, quick actions, and visual highlights for faster browsing.
 
 ![Home Screen](docs/doc_image/home_page.jpg)
+Display Note: Primary mobile feed layout with quick visual scan for lost/found posts.
 ![Home Screen Variant](docs/doc_image/home_page1.jpg)
+Display Note: Alternate feed state showing continuous image-driven browsing experience.
 
 ### Login
 
 The Login screen provides secure access to reporting, chat, saved items, and recovery actions for authenticated users.
 
 ![Login Screen](docs/doc_image/login.jpg)
+Display Note: Secure sign-in entry point for protected mobile features.
 
 ### Reports
 
 The Report flow helps users submit complete and trusted reports using structured fields, location details, and image attachment.
 
 ![Report Item Screen](docs/doc_image/report_item.jpg)
+Display Note: Main report composer with structured inputs and validation guidance.
 ![Lost Form](docs/doc_image/lost_form.jpg)
+Display Note: Lost-item focused form state with recovery/safety metadata fields.
 ![Lost and Found Form](docs/doc_image/lost-found-form.jpg)
+Display Note: Shared form template for both lost and found scenarios.
 
 ### Search
 
 The Search and found-items view supports quick filtering and matching to reduce recovery time.
 
 ![Found Items Or Search](docs/doc_image/found-items-search.jpg)
+Display Note: Search/filter screen optimized for fast match discovery.
 
 ### Account
 
 The Account area manages user profile, preferences, and personal activity context, including dark-mode experience.
 
 ![Account Screen](docs/doc_image/account.jpg)
+Display Note: User profile and settings hub for account-level actions.
 ![Dark Mode Account](docs/doc_image/darkmode_account.jpg)
+Display Note: Dark-theme account presentation for readability in low-light use.
 
 ### Alerts
 
 The Alerts screen surfaces important updates such as match events and moderation/recovery-related notifications.
 
 ![Alerts Screen](docs/doc_image/alerts.jpg)
+Display Note: Notification timeline for match, moderation, and recovery updates.
 
 ## Detailed Per-Image Notes
 

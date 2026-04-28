@@ -28,6 +28,9 @@
 - GPS permission denied flow
 - Offline mode cache fallback
 - Network restoration sync
+- Draft restore after app restart
+- High-latency network behavior on list/search/report actions
+- Battery/thermal sanity check during image-heavy feed usage
 
 ## 5. UAT Checklist
 
@@ -35,3 +38,10 @@
 - Search result relevance acceptable
 - Chat experience understandable
 - Recovery completion flow clear
+
+## 6. Mobile Computing Validation Focus
+
+- Intermittent network resilience: app stays useful during poor connectivity.
+- On-device storage behavior: saved items and draft persistence verified.
+- Permission lifecycle: camera/location/notification denial and re-grant paths verified.
+- Resource-awareness: no major UI lag during image rendering and screen transitions.

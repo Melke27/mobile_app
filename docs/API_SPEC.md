@@ -56,6 +56,7 @@ Query params:
 - `status` (`lost|found|recovered`)
 - `campus`
 - `category`
+- `urgency` (`low|normal|high`)
 - `keyword`
 - `dateFrom`
 - `dateTo`
@@ -74,6 +75,11 @@ Request:
   "category": "ID Card",
   "campus": "Adama Campus",
   "locationText": "Library gate",
+  "lastSeenHint": "Today",
+  "urgency": "high",
+  "proofHint": "Student ID photo inside",
+  "safeMeetupSpot": "Campus security office",
+  "rewardOffer": "Small thank-you gift",
   "location": { "latitude": 8.55, "longitude": 39.27 },
   "imageUrl": "file://..."
 }

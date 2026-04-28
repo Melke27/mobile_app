@@ -12,6 +12,7 @@ User Use Cases:
 - Register/Login
 - Report Lost Item
 - Report Found Item
+- Add Safe Meetup Spot + Proof Hint
 - Search Items
 - View Item Details
 - Chat With Other User
@@ -27,13 +28,16 @@ Admin Use Cases:
 ## Sequence: Report Lost Item
 
 1. User opens report screen.
-2. User captures image and GPS location.
-3. User submits form.
-4. Mobile app sends `POST /api/items` with JWT.
-5. API validates token and payload.
-6. API stores item in MongoDB.
-7. API returns created item.
-8. App refreshes feed and caches new list.
+2. User fills title, description, last-seen hint, urgency, proof hint, and safe meetup spot.
+3. User captures image and optional GPS location.
+4. App auto-saves local draft while user types.
+5. App checks similar reports and warns about duplicates.
+6. User submits form.
+7. Mobile app sends `POST /api/items` with JWT.
+8. API validates token and payload.
+9. API stores item in MongoDB.
+10. API returns created item.
+11. App refreshes feed and caches new list.
 
 ## Sequence: Match + Chat
 
